@@ -3,15 +3,19 @@ using static GlobalGameData;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private GameObject blackStone;
+    [SerializeField] private GameObject whiteStone;
+
     private GameState _currentState;
     private static bool _isInTurn;
     public static bool EndTurn;
 
     void Start()
     {
-        _currentState = GameState.GameStart;
         _isInTurn = false;
         EndTurn = false;
+        Debug.Log("Game Initialized");
+        _currentState = GameState.BlackTurn;
     }
 
     void Update()
@@ -27,7 +31,7 @@ public class GameManager : MonoBehaviour
         switch (_currentState)
         {
             case GameState.BlackTurn or GameState.WhiteTurn:
-                CurrentStones.StartTurn(_currentState);
+                CurrentStones.StartTurn(_currentState, transform, blackStone, whiteStone);
                 _isInTurn = true;
                 break;
             case GameState.GameEnd:
