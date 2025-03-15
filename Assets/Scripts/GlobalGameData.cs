@@ -3,12 +3,14 @@ using System.Collections.Generic;
 
 public static class GlobalGameData
 {
-    public static int[,] PrevStones { get; set; } = new int[19, 19];
+    public static int[,] MainBoard { get; set; } = new int[19, 19];
 
     public enum GameState
     {
         GameStart, BlackTurn, WhiteTurn, GameEnd
     }
+
+    public static GameState CurrentState = GameState.GameStart;
 
     private static readonly Queue<int> BlockQueue = new Queue<int>(7);
 

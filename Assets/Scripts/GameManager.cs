@@ -3,10 +3,6 @@ using static GlobalGameData;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject blackStone;
-    [SerializeField] private GameObject whiteStone;
-
-    private GameState _currentState;
     private static bool _isInTurn;
     public static bool EndTurn;
 
@@ -15,7 +11,7 @@ public class GameManager : MonoBehaviour
         _isInTurn = false;
         EndTurn = false;
         Debug.Log("Game Initialized");
-        _currentState = GameState.BlackTurn;
+        CurrentState = GameState.BlackTurn;
     }
 
     void Update()
@@ -23,15 +19,19 @@ public class GameManager : MonoBehaviour
         if (_isInTurn)
         {
             if (EndTurn)
+            {
+                PrevStones.LocateStones(CurrentStones.GetCurrentStones);
                 ChangeTurn();
+            }
+
             return;
         }
 
 
-        switch (_currentState)
+        switch (CurrentState)
         {
             case GameState.BlackTurn or GameState.WhiteTurn:
-                CurrentStones.StartTurn(_currentState, transform, blackStone, whiteStone);
+                CurrentStones.StartTurn();
                 _isInTurn = true;
                 break;
             case GameState.GameEnd:
@@ -43,6 +43,6 @@ public class GameManager : MonoBehaviour
     private void ChangeTurn()
     {
         _isInTurn = false;
-        _currentState = (_currentState == GameState.WhiteTurn) ? GameState.BlackTurn : GameState.WhiteTurn;
+        CurrentState = (CurrentState == GameState.WhiteTurn) ? GameState.BlackTurn : GameState.WhiteTurn;
     }
 }
