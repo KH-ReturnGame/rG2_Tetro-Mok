@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
     private void ChangeTurn()
     {
         _isInTurn = false;
+        EndTurn = false;
         CurrentState = (CurrentState == GameState.WhiteTurn) ? GameState.BlackTurn : GameState.WhiteTurn;
     }
 }

@@ -5,11 +5,16 @@ public class CurrentStones : MonoBehaviour
 {
     [SerializeField] private GameObject privateBlackStone;
     [SerializeField] private GameObject privateWhiteStone;
+    [SerializeField] private GameObject privateBlackStoneError;
+    [SerializeField] private GameObject privateWhiteStoneError;
     private static GameObject _blackStone;
     private static GameObject _whiteStone;
+    private static GameObject _blackStoneError;
+    private static GameObject _whiteStoneError;
+
     private static int[,] _gameBoard;
     public static int[,] GetCurrentStones => _gameBoard;
-    private static bool _isInTurn;
+    private static bool _isInTurn, _canLocate;
 
     private enum MoveDirection { Up, Down, Left, Right, Turn }
 
@@ -17,7 +22,10 @@ public class CurrentStones : MonoBehaviour
     {
         _blackStone = privateBlackStone;
         _whiteStone = privateWhiteStone;
+        _blackStoneError = privateBlackStoneError;
+        _whiteStoneError = privateWhiteStoneError;
         _isInTurn = false;
+        _canLocate = true;
         _gameBoard = new int[19, 19];
     }
 
@@ -36,7 +44,7 @@ public class CurrentStones : MonoBehaviour
                 MoveStones(MoveDirection.Right);
             else if (Input.GetKeyDown(KeyCode.R))
                 MoveStones(MoveDirection.Turn);
-            else if (Input.GetKeyDown(KeyCode.A))
+            else if (Input.GetKeyDown(KeyCode.Return) && _canLocate)
                 EndTurn();
         }
     }
@@ -52,15 +60,7 @@ public class CurrentStones : MonoBehaviour
     {
         _gameBoard = CreateStones(GlobalGameData.NextBlock);
 
-        for (int i = 0; i < 19; i++)
-        for (int j = 0; j < 19; j++)
-            if (_gameBoard[i, j] == 1)
-            {
-                GameObject stone = (CurrentState == GameState.BlackTurn) ?
-                    Instantiate(_blackStone, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity) :
-                    Instantiate(_whiteStone, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity);
-                stone.transform.SetParent(GameObject.Find("CurrentStones").transform);
-            }
+        RenderStones();
     }
 
     /// <summary>
@@ -199,23 +199,13 @@ public class CurrentStones : MonoBehaviour
             // 회전된 도형을 원래 위치에 맞춰 배치
             int offsetX = 0, offsetY = 0;
 
-            // TODO: 항상 minX,minY 기준으로 돌을 배치하여 보드의 끝에서 떨어져 배치되는 문제 발생. 각 상황마다 배치 기준 다르게 할 필요.
             if (minX + height - 1 > 18)
             {
                 offsetX = 18 - (minX + height - 1);
             }
-            else if (maxX - height + 1 < 0)
-            {
-                offsetX = height - maxX - 1;
-            }
-
             if (minY + width - 1 > 18)
             {
                 offsetY = 18 - (minY + width -1);
-            }
-            else if (maxY - width + 1 < 0)
-            {
-                offsetY = width - maxY - 1;
             }
 
             for (int i = 0; i < height; i++)
@@ -244,19 +234,34 @@ public class CurrentStones : MonoBehaviour
             }
         }
 
-        foreach (Transform child in transform)
+        RenderStones();
+    }
+
+    static void RenderStones()
+    {
+        Transform parent = GameObject.Find("CurrentStones").transform;
+        foreach (Transform child in parent)
         {
             Destroy(child.gameObject);
         }
 
+        _canLocate = true;
         for (int i = 0; i < 19; i++)
-                          for (int j = 0; j < 19; j++)
-            if (_gameBoard[i, j] == 1)
+        for (int j = 0; j < 19; j++)
+            if (_gameBoard[i, j] == 1 && MainBoard[i,j] == 0)
             {
                 GameObject stone = (CurrentState == GameState.BlackTurn) ?
                     Instantiate(_blackStone, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity) :
                     Instantiate(_whiteStone, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity);
-                stone.transform.SetParent(transform);
+                stone.transform.SetParent(parent);
+            } else if (_gameBoard[i, j] == 1 && (MainBoard[i, j] == 1 || MainBoard[i, j] == 2))
+            {
+                GameObject stone = (CurrentState == GameState.BlackTurn) ?
+                    Instantiate(_blackStoneError, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity) :
+                    Instantiate(_whiteStoneError, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity);
+                stone.transform.SetParent(parent);
+
+                _canLocate = false;
             }
     }
 

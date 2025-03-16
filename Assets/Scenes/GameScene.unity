@@ -1022,6 +1022,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   privateBlackStone: {fileID: 4363331308139856061, guid: a9e2b481f30739d47a7a64f48c44c691, type: 3}
   privateWhiteStone: {fileID: 321561902432330289, guid: 0a55df19aeb13444dacbf7760aad12e0, type: 3}
+  privateBlackStoneError: {fileID: 4557864372855331827, guid: b70b2b5554d6238498322425a04b99d6, type: 3}
+  privateWhiteStoneError: {fileID: 7167970497573950219, guid: bd9d204bdfccdcc4a80a7d1b56eb77ba, type: 3}
 --- !u!1 &1335511102
 GameObject:
   m_ObjectHideFlags: 0
