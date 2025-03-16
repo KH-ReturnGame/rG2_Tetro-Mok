@@ -58,36 +58,23 @@ public class CurrentStones : MonoBehaviour
 
     static void InitBoard()
     {
-        _gameBoard = CreateStones(GlobalGameData.NextBlock);
-
+        _gameBoard = CreateStones(Random.Range(1,4));
         RenderStones();
     }
 
     /// <summary>
     /// 생성할 현재 턴의 돌의 배열을 초기화한다.
     /// </summary>
-    /// <param name="type">1~7의 테트로미노 모양</param>
+    /// <param name="type">1~3의 트리미노 모양</param>
     /// <list type="number">
     ///     <item>
-    ///       <description>I-Tetromino</description>
+    ///       <description>ㅡ 트리미노</description>
     ///     </item>
     ///     <item>
-    ///       <description>O-Tetromino</description>
+    ///       <description>ㄴ 트리미노</description>
     ///     </item>
     ///     <item>
-    ///       <description>T-Tetromino</description>
-    ///     </item>
-    ///     <item>
-    ///       <description>S-Tetromino</description>
-    ///     </item>
-    ///     <item>
-    ///       <description>Z-Tetromino</description>
-    ///     </item>
-    ///     <item>
-    ///       <description>J-Tetromino</description>
-    ///     </item>
-    ///     <item>
-    ///       <description>L-Tetromino</description>
+    ///       <description>/ 트리미노</description>
     ///     </item>
     ///   </list>
     /// <returns>[19x19] 정수 배열</returns>
@@ -99,7 +86,6 @@ public class CurrentStones : MonoBehaviour
         {
             // 보드의 중심: [9,9]
             case 1:
-                initialStones[7, 9] = 1;
                 initialStones[8, 9] = 1;
                 initialStones[9, 9] = 1;
                 initialStones[10, 9] = 1;
@@ -108,37 +94,11 @@ public class CurrentStones : MonoBehaviour
                 initialStones[9, 9] = 1;
                 initialStones[8, 9] = 1;
                 initialStones[9, 8] = 1;
-                initialStones[8, 8] = 1;
                 break;
             case 3:
-                initialStones[9, 9] = 1;
                 initialStones[8, 8] = 1;
-                initialStones[9, 8] = 1;
-                initialStones[10, 8] = 1;
-                break;
-            case 4:
-                initialStones[9, 8] = 1;
-                initialStones[10, 8] = 1;
-                initialStones[8, 9] = 1;
                 initialStones[9, 9] = 1;
-                break;
-            case 5:
-                initialStones[8, 8] = 1;
-                initialStones[9, 8] = 1;
-                initialStones[9, 9] = 1;
-                initialStones[10, 9] = 1;
-                break;
-            case 6:
-                initialStones[8, 9] = 1;
-                initialStones[9, 9] = 1;
-                initialStones[10, 9] = 1;
-                initialStones[8, 8] = 1;
-                break;
-            case 7:
-                initialStones[8, 9] = 1;
-                initialStones[9, 9] = 1;
-                initialStones[10, 9] = 1;
-                initialStones[10, 8] = 1;
+                initialStones[10, 10] = 1;
                 break;
         }
         return initialStones;
