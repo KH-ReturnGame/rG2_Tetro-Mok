@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      stone_white_error_0: 6192744428938129692
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

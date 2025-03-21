@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      stone_black_error_0: -7409958285667411676
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

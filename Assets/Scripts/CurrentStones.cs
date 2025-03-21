@@ -3,22 +3,36 @@ using static GlobalGameData;
 
 public class CurrentStones : MonoBehaviour
 {
-    [SerializeField] private GameObject privateBlackStone;
-    [SerializeField] private GameObject privateWhiteStone;
-    [SerializeField] private GameObject privateBlackStoneError;
-    [SerializeField] private GameObject privateWhiteStoneError;
     private static GameObject _blackStone;
     private static GameObject _whiteStone;
     private static GameObject _blackStoneError;
     private static GameObject _whiteStoneError;
 
     private static int[,] _gameBoard;
-    public static int[,] GetCurrentStones => _gameBoard;
+
     private static bool _isInTurn, _canLocate;
+    [SerializeField] private GameObject privateBlackStone;
+    [SerializeField] private GameObject privateWhiteStone;
+    [SerializeField] private GameObject privateBlackStoneError;
+    [SerializeField] private GameObject privateWhiteStoneError;
 
-    private enum MoveDirection { Up, Down, Left, Right, Turn }
+    public static (int, int)[] GetCurrentStones
+    {
+        get
+        {
+            var stones = new (int, int)[3];
+            var count = 0;
 
-    void Start()
+            for (var i = 0; i < 19; i++)
+            for (var j = 0; j < 19; j++)
+                if (_gameBoard[i, j] == 1)
+                    stones[count++] = (i, j);
+
+            return stones;
+        }
+    }
+
+    private void Start()
     {
         _blackStone = privateBlackStone;
         _whiteStone = privateWhiteStone;
@@ -29,7 +43,7 @@ public class CurrentStones : MonoBehaviour
         _gameBoard = new int[19, 19];
     }
 
-    void Update()
+    private void Update()
     {
         if (!_isInTurn) return;
         if (Input.anyKeyDown)
@@ -56,32 +70,32 @@ public class CurrentStones : MonoBehaviour
         InitBoard();
     }
 
-    static void InitBoard()
+    private static void InitBoard()
     {
-        _gameBoard = CreateStones(Random.Range(1,4));
+        _gameBoard = CreateStones(Random.Range(1, 4));
         RenderStones();
     }
 
     /// <summary>
-    /// 생성할 현재 턴의 돌의 배열을 초기화한다.
+    ///     생성할 현재 턴의 돌의 배열을 초기화한다.
     /// </summary>
     /// <param name="type">1~3의 트리미노 모양</param>
     /// <list type="number">
     ///     <item>
-    ///       <description>ㅡ 트리미노</description>
+    ///         <description>ㅡ 트리미노</description>
     ///     </item>
     ///     <item>
-    ///       <description>ㄴ 트리미노</description>
+    ///         <description>ㄴ 트리미노</description>
     ///     </item>
     ///     <item>
-    ///       <description>/ 트리미노</description>
+    ///         <description>/ 트리미노</description>
     ///     </item>
-    ///   </list>
+    /// </list>
     /// <returns>[19x19] 정수 배열</returns>
-    static int[,] CreateStones(int type)
+    private static int[,] CreateStones(int type)
     {
         Debug.Log("Creating Stones; Stone Type:" + type);
-        int[,] initialStones = new int[19, 19];
+        var initialStones = new int[19, 19];
         switch (type)
         {
             // 보드의 중심: [9,9]
@@ -101,44 +115,37 @@ public class CurrentStones : MonoBehaviour
                 initialStones[10, 10] = 1;
                 break;
         }
+
         return initialStones;
     }
 
     /// <summary>
-    /// 이동 방향에 맞춰 배열 변경 및 렌더링
+    ///     이동 방향에 맞춰 배열 변경 및 렌더링
     /// </summary>
     /// <param name="direction">MoveDirection</param>
-    void MoveStones(MoveDirection direction)
+    private void MoveStones(MoveDirection direction)
     {
         Debug.Log("Move Stones; Direction: " + direction);
 
         // 현재 도형의 형태 지정
         int minX = 19, maxX = -1, minY = 19, maxY = -1;
-        for (int i = 0; i < 19; i++)
-        {
-            for (int j = 0; j < 19; j++)
+        for (var i = 0; i < 19; i++)
+        for (var j = 0; j < 19; j++)
+            if (_gameBoard[i, j] == 1)
             {
-                if (_gameBoard[i, j] == 1)
-                {
-                    if (i < minX) minX = i;
-                    if (i > maxX) maxX = i;
-                    if (j < minY) minY = j;
-                    if (j > maxY) maxY = j;
-                }
+                if (i < minX) minX = i;
+                if (i > maxX) maxX = i;
+                if (j < minY) minY = j;
+                if (j > maxY) maxY = j;
             }
-        }
 
-        int height = maxY - minY + 1;
-        int width = maxX - minX + 1;
-        int[,] shape = new int[width, height];
+        var height = maxY - minY + 1;
+        var width = maxX - minX + 1;
+        var shape = new int[width, height];
 
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                shape[i, j] = _gameBoard[minX + i, minY + j];
-            }
-        }
+        for (var i = 0; i < width; i++)
+        for (var j = 0; j < height; j++)
+            shape[i, j] = _gameBoard[minX + i, minY + j];
 
         // 보드 초기화
         _gameBoard = new int[19, 19];
@@ -147,34 +154,20 @@ public class CurrentStones : MonoBehaviour
         if (direction == MoveDirection.Turn)
         {
             // 시계 방향 90도 회전
-            int[,] rotatedShape = new int[height, width];
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    rotatedShape[j, width - i - 1] = shape[i, j];
-                }
-            }
+            var rotatedShape = new int[height, width];
+            for (var i = 0; i < width; i++)
+            for (var j = 0; j < height; j++)
+                rotatedShape[j, width - i - 1] = shape[i, j];
 
             // 회전된 도형을 원래 위치에 맞춰 배치
             int offsetX = 0, offsetY = 0;
 
-            if (minX + height - 1 > 18)
-            {
-                offsetX = 18 - (minX + height - 1);
-            }
-            if (minY + width - 1 > 18)
-            {
-                offsetY = 18 - (minY + width -1);
-            }
+            if (minX + height - 1 > 18) offsetX = 18 - (minX + height - 1);
+            if (minY + width - 1 > 18) offsetY = 18 - (minY + width - 1);
 
-            for (int i = 0; i < height; i++)
-            {
-                for (int j = 0; j < width; j++)
-                {
-                    _gameBoard[minX + i + offsetX, minY + j + offsetY] = rotatedShape[i, j];
-                }
-            }
+            for (var i = 0; i < height; i++)
+            for (var j = 0; j < width; j++)
+                _gameBoard[minX + i + offsetX, minY + j + offsetY] = rotatedShape[i, j];
         }
         // 상하좌우로 이동하는 경우
         else
@@ -185,56 +178,56 @@ public class CurrentStones : MonoBehaviour
             else if (direction == MoveDirection.Left && minX > 0) moveX = -1;
             else if (direction == MoveDirection.Right && maxX < 18) moveX = 1;
 
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    _gameBoard[minX + i + moveX, minY + j + moveY] = shape[i, j];
-                }
-            }
+            for (var i = 0; i < width; i++)
+            for (var j = 0; j < height; j++)
+                _gameBoard[minX + i + moveX, minY + j + moveY] = shape[i, j];
         }
 
         RenderStones();
     }
 
-    static void RenderStones()
+    private static void RenderStones()
     {
-        Transform parent = GameObject.Find("CurrentStones").transform;
-        foreach (Transform child in parent)
-        {
-            Destroy(child.gameObject);
-        }
+        var parent = GameObject.Find("CurrentStones").transform;
+        foreach (Transform child in parent) Destroy(child.gameObject);
 
         _canLocate = true;
-        for (int i = 0; i < 19; i++)
-        for (int j = 0; j < 19; j++)
-            if (_gameBoard[i, j] == 1 && MainBoard[i,j] == 0)
+        foreach (var (i, j) in GetCurrentStones)
+            if (MainBoard[i, j] == 0)
             {
-                GameObject stone = (CurrentState == GameState.BlackTurn) ?
-                    Instantiate(_blackStone, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity) :
-                    Instantiate(_whiteStone, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity);
+                var stone = CurrentState == GameState.BlackTurn
+                    ? Instantiate(_blackStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity)
+                    : Instantiate(_whiteStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
                 stone.transform.SetParent(parent);
-            } else if (_gameBoard[i, j] == 1 && (MainBoard[i, j] == 1 || MainBoard[i, j] == 2))
+            }
+            else if (MainBoard[i, j] == 1 || MainBoard[i, j] == 2)
             {
-                GameObject stone = (CurrentState == GameState.BlackTurn) ?
-                    Instantiate(_blackStoneError, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity) :
-                    Instantiate(_whiteStoneError, new Vector3((i-9)*0.5f, (j-9)*0.5f, 0), Quaternion.identity);
+                var stone = CurrentState == GameState.BlackTurn
+                    ? Instantiate(_blackStoneError, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity)
+                    : Instantiate(_whiteStoneError, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0),
+                        Quaternion.identity);
                 stone.transform.SetParent(parent);
 
                 _canLocate = false;
             }
     }
 
-    void EndTurn()
+    private void EndTurn()
     {
         _isInTurn = false;
         GameManager.EndTurn = true;
 
-        foreach (Transform child in transform)
-        {
-            Destroy(child.gameObject);
-        }
+        foreach (Transform child in transform) Destroy(child.gameObject);
 
         Debug.Log("End Turn;");
+    }
+
+    private enum MoveDirection
+    {
+        Up,
+        Down,
+        Left,
+        Right,
+        Turn
     }
 }
