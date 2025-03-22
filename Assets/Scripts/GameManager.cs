@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using static GlobalGameData;
 
@@ -7,6 +8,9 @@ public class GameManager : MonoBehaviour
 {
     private static bool _isInTurn;
     public static bool EndTurn;
+
+    [SerializeField] private TextMeshProUGUI blackScoreText;
+    [SerializeField] private TextMeshProUGUI whiteScoreText;
 
     private void Start()
     {
@@ -49,12 +53,11 @@ public class GameManager : MonoBehaviour
     /// <param name="getCurrentStones"></param>
     private void CheckConnections((int, int)[] getCurrentStones)
     {
-        // TODO: 점수 처리(당장), 줄 클리어 이펙트(나중에)
-
         var gameBoard = MainBoard;
         var stone = CurrentState == GameState.BlackTurn ? 1 : 2;
 
         var stonesToRemove = new List<(int, int)>();
+        var deletedLines = 0;
 
         // 가로 탐색
         var checkedY = new List<int>();
@@ -71,7 +74,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 0) break;
-                if (gameBoard[--currentX, j] == stone)
+                if (gameBoard[--currentX, j] == stone || gameBoard[currentX, j] == 3)
                 {
                     xLength++;
                     checkingStones.Add((currentX, j));
@@ -86,7 +89,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 18) break;
-                if (gameBoard[++currentX, j] == stone)
+                if (gameBoard[++currentX, j] == stone || gameBoard[currentX, j] == 3)
                 {
                     xLength++;
                     checkingStones.Add((currentX, j));
@@ -100,6 +103,7 @@ public class GameManager : MonoBehaviour
             if (xLength >= 10)
             {
                 Debug.Log("Complete Line!");
+                deletedLines++;
                 stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
             }
         }
@@ -119,7 +123,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentY == 0) break;
-                if (gameBoard[i, --currentY] == stone)
+                if (gameBoard[i, --currentY] == stone || gameBoard[i, currentY] == 3)
                 {
                     yLength++;
                     checkingStones.Add((i, currentY));
@@ -134,7 +138,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentY == 18) break;
-                if (gameBoard[i, ++currentY] == stone)
+                if (gameBoard[i, ++currentY] == stone || gameBoard[i, currentY] == 3)
                 {
                     yLength++;
                     checkingStones.Add((i, currentY));
@@ -148,6 +152,7 @@ public class GameManager : MonoBehaviour
             if (yLength >= 10)
             {
                 Debug.Log("Complete Line!");
+                deletedLines++;
                 stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
             }
         }
@@ -166,7 +171,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 0 || currentY == 0) break;
-                if (gameBoard[--currentX, --currentY] == stone)
+                if (gameBoard[--currentX, --currentY] == stone || gameBoard[currentX, currentY] == 3)
                 {
                     diagLength++;
                     checkingStones.Add((currentX, currentY));
@@ -182,7 +187,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 18 || currentY == 18) break;
-                if (gameBoard[++currentX, ++currentY] == stone)
+                if (gameBoard[++currentX, ++currentY] == stone || gameBoard[currentX, currentY] == 3)
                 {
                     diagLength++;
                     checkingStones.Add((currentX, currentY));
@@ -196,6 +201,7 @@ public class GameManager : MonoBehaviour
             if (diagLength >= 10)
             {
                 Debug.Log("Complete Line!");
+                deletedLines++;
                 stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
             }
         }
@@ -214,7 +220,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 0 || currentY == 18) break;
-                if (gameBoard[--currentX, ++currentY] == stone)
+                if (gameBoard[--currentX, ++currentY] == stone || gameBoard[currentX, currentY] == 3)
                 {
                     diagLength++;
                     checkingStones.Add((currentX, currentY));
@@ -230,7 +236,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 18 || currentY == 0) break;
-                if (gameBoard[++currentX, --currentY] == stone)
+                if (gameBoard[++currentX, --currentY] == stone || gameBoard[currentX, currentY] == 3)
                 {
                     diagLength++;
                     checkingStones.Add((currentX, currentY));
@@ -244,12 +250,38 @@ public class GameManager : MonoBehaviour
             if (diagLength >= 10)
             {
                 Debug.Log("Complete Line!");
+                deletedLines++;
                 stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
             }
         }
 
+        if (CurrentState == GameState.BlackTurn)
+        {
+            BlackScore += deletedLines * 10;
+            blackScoreText.text = "흑: " + BlackScore;
+        }
+        else
+        {
+            WhiteScore += deletedLines * 10;
+            whiteScoreText.text = "백: " + WhiteScore;
+        }
+
         foreach (var (i, j) in stonesToRemove)
         {
+            if (gameBoard[i, j] == 3)
+            {
+                if (CurrentState == GameState.BlackTurn)
+                {
+                    BlackScore += 3;
+                    blackScoreText.text = "흑: " + BlackScore;
+                }
+                else
+                {
+                    WhiteScore += 3;
+                    whiteScoreText.text = "백: " + WhiteScore;
+                }
+            }
+
             MainBoard[i, j] = 0;
             Destroy(GameObject.Find(i + "_" + j));
         }

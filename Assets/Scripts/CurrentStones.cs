@@ -200,7 +200,7 @@ public class CurrentStones : MonoBehaviour
                     : Instantiate(_whiteStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
                 stone.transform.SetParent(parent);
             }
-            else if (MainBoard[i, j] == 1 || MainBoard[i, j] == 2)
+            else
             {
                 var stone = CurrentState == GameState.BlackTurn
                     ? Instantiate(_blackStoneError, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity)
