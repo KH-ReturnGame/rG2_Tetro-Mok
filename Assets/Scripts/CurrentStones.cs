@@ -38,29 +38,38 @@ public class CurrentStones : MonoBehaviour
         _whiteStone = privateWhiteStone;
         _blackStoneError = privateBlackStoneError;
         _whiteStoneError = privateWhiteStoneError;
-        _isInTurn = false;
         _canLocate = true;
         _gameBoard = new int[19, 19];
     }
 
     private void Update()
     {
-        if (!_isInTurn) return;
         if (Input.anyKeyDown)
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-                MoveStones(MoveDirection.Up);
-            else if (Input.GetKeyDown(KeyCode.DownArrow))
-                MoveStones(MoveDirection.Down);
-            else if (Input.GetKeyDown(KeyCode.LeftArrow))
-                MoveStones(MoveDirection.Left);
-            else if (Input.GetKeyDown(KeyCode.RightArrow))
-                MoveStones(MoveDirection.Right);
-            else if (Input.GetKeyDown(KeyCode.R))
-                MoveStones(MoveDirection.Turn);
-            else if (Input.GetKeyDown(KeyCode.Return) && _canLocate)
-                EndTurn();
+            // 플레이 중임을 체크
+            if (_isInTurn)
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                    MoveStones(MoveDirection.Up);
+                else if (Input.GetKeyDown(KeyCode.DownArrow))
+                    MoveStones(MoveDirection.Down);
+                else if (Input.GetKeyDown(KeyCode.LeftArrow))
+                    MoveStones(MoveDirection.Left);
+                else if (Input.GetKeyDown(KeyCode.RightArrow))
+                    MoveStones(MoveDirection.Right);
+                else if (Input.GetKeyDown(KeyCode.R))
+                    MoveStones(MoveDirection.Turn);
+                else if (Input.GetKeyDown(KeyCode.Return) && _canLocate)
+                    EndTurn();
+
+            // 게임 종료 선언
+            if (Input.GetKeyDown(KeyCode.Escape))
+                Pause();
         }
+    }
+
+    public void Pause()
+    {
+        _isInTurn = !_isInTurn;
     }
 
     public static void StartTurn()

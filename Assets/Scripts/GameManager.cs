@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI blackScoreText;
     [SerializeField] private TextMeshProUGUI whiteScoreText;
+    [SerializeField] private GameObject pauseScreen;
+    private GameState _prevState;
 
     private void Start()
     {
@@ -18,10 +20,14 @@ public class GameManager : MonoBehaviour
         EndTurn = false;
         Debug.Log("Game Initialized");
         CurrentState = GameState.BlackTurn;
+        pauseScreen.SetActive(false);
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape)) Pause();
+
+        // 플레이 중일 때
         if (_isInTurn)
         {
             if (EndTurn)
@@ -34,17 +40,54 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-
+        // 상태가 변경될 때
         switch (CurrentState)
         {
             case GameState.BlackTurn or GameState.WhiteTurn:
                 CurrentStones.StartTurn();
                 _isInTurn = true;
                 break;
+            case GameState.Pause:
+                break;
+            case GameState.CheckScores:
+                break;
             case GameState.GameEnd:
-                _isInTurn = true; // 이후에 점수 판정 등 행함
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    // TODO: 메인 신으로 돌아가기
+                }
+
                 break;
         }
+    }
+
+    public void Pause()
+    {
+        _isInTurn = !_isInTurn;
+
+        if (_isInTurn)
+        {
+            CurrentState = _prevState;
+            pauseScreen.SetActive(false);
+        }
+        else
+        {
+            _prevState = CurrentState;
+            CurrentState = GameState.Pause;
+            pauseScreen.SetActive(true);
+        }
+    }
+
+    public void EndGame()
+    {
+        _isInTurn = false;
+        CurrentState = GameState.CheckScores;
+        pauseScreen.SetActive(false);
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 
     /// <summary>
