@@ -4,22 +4,22 @@ public class CameraResolution : MonoBehaviour
 {
     private void Awake()
     {
-        var camera = GetComponent<Camera>();
-        var rect = camera.rect;
-        var scaleheight = (float)Screen.width / Screen.height / ((float)16 / 9);
-        var scalewidth = 1f / scaleheight;
+        var mainCamera = GetComponent<Camera>();
+        var rect = mainCamera.rect;
+        var scaleHeight = (float)Screen.width / Screen.height / ((float)16 / 9);
+        var scaleWidth = 1f / scaleHeight;
 
-        if (scaleheight < 1)
+        if (scaleHeight < 1)
         {
-            rect.height = scaleheight;
-            rect.y = (1f - scaleheight) / 2f;
+            rect.height = scaleHeight;
+            rect.y = (1f - scaleHeight) / 2f;
         }
         else
         {
-            rect.width = scalewidth;
-            rect.x = (1f - scalewidth) / 2f;
+            rect.width = scaleWidth;
+            rect.x = (1f - scaleWidth) / 2f;
         }
 
-        camera.rect = rect;
+        mainCamera.rect = rect;
     }
 }

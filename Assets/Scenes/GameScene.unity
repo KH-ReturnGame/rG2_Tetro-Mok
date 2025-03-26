@@ -796,19 +796,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 703995609}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: Pause
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1327315331}
-        m_TargetAssemblyTypeName: CurrentStones, Assembly-CSharp
-        m_MethodName: Pause
+        m_MethodName: PauseResume
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1102,9 +1090,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f2c02ea7f4c13645a8e16302e3f379e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blackStone: {fileID: 1081932123705045140, guid: 916441d35b7d5b847850ebc67b559adc, type: 3}
+  whiteStone: {fileID: 5886991509698167153, guid: a4ff4f98d25c481468f8fc6cc07e695e, type: 3}
+  blackStoneNew: {fileID: 4363331308139856061, guid: a9e2b481f30739d47a7a64f48c44c691, type: 3}
+  whiteStoneNew: {fileID: 321561902432330289, guid: 0a55df19aeb13444dacbf7760aad12e0, type: 3}
+  blackStoneError: {fileID: 4557864372855331827, guid: b70b2b5554d6238498322425a04b99d6, type: 3}
+  whiteStoneError: {fileID: 7167970497573950219, guid: bd9d204bdfccdcc4a80a7d1b56eb77ba, type: 3}
+  bonusStone: {fileID: 7611473146234202156, guid: 917d2c026a0c18741972de028a8b71ef, type: 3}
+  pauseScreen: {fileID: 821501185}
+  currentStones: {fileID: 1327315329}
+  prevStones: {fileID: 1420084825}
   blackScoreText: {fileID: 807261180}
   whiteScoreText: {fileID: 2007706962}
-  pauseScreen: {fileID: 821501185}
+  blackScore: 0
+  whiteScore: 0
 --- !u!4 &703995610
 Transform:
   m_ObjectHideFlags: 0
@@ -1346,7 +1345,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 821501185}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1699,7 +1698,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1327315330}
-  - component: {fileID: 1327315331}
   m_Layer: 0
   m_Name: CurrentStones
   m_TagString: Untagged
@@ -1722,22 +1720,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1327315331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1327315329}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 520836c4d9127a7419fa13d58bdf6651, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  privateBlackStone: {fileID: 4363331308139856061, guid: a9e2b481f30739d47a7a64f48c44c691, type: 3}
-  privateWhiteStone: {fileID: 321561902432330289, guid: 0a55df19aeb13444dacbf7760aad12e0, type: 3}
-  privateBlackStoneError: {fileID: 4557864372855331827, guid: b70b2b5554d6238498322425a04b99d6, type: 3}
-  privateWhiteStoneError: {fileID: 7167970497573950219, guid: bd9d204bdfccdcc4a80a7d1b56eb77ba, type: 3}
 --- !u!1 &1420084825
 GameObject:
   m_ObjectHideFlags: 0
@@ -1782,9 +1764,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 237e1fb701e67ef4eaa352445fac1b6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  privateBlackStone: {fileID: 1081932123705045140, guid: 916441d35b7d5b847850ebc67b559adc, type: 3}
-  privateWhiteStone: {fileID: 5886991509698167153, guid: a4ff4f98d25c481468f8fc6cc07e695e, type: 3}
-  privateBonusStone: {fileID: 7611473146234202156, guid: 917d2c026a0c18741972de028a8b71ef, type: 3}
 --- !u!1 &1885500220
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,88 +1,95 @@
 using System.Collections.Generic;
 using System.Linq;
+using State;
 using TMPro;
 using UnityEngine;
-using static GlobalGameData;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    private static bool _isInTurn;
-    public static bool EndTurn;
+    [SerializeField] public GameObject blackStone,
+        whiteStone,
+        blackStoneNew,
+        whiteStoneNew,
+        blackStoneError,
+        whiteStoneError,
+        bonusStone;
 
-    [SerializeField] private TextMeshProUGUI blackScoreText;
-    [SerializeField] private TextMeshProUGUI whiteScoreText;
-    [SerializeField] private GameObject pauseScreen;
-    private GameState _prevState;
+    [SerializeField] public GameObject pauseScreen, currentStones, prevStones;
+    [SerializeField] public TextMeshProUGUI blackScoreText, whiteScoreText;
+    public int blackScore, whiteScore;
+    private IState _currentState;
+    private bool _isPaused;
 
-    private void Start()
+    public int[,] GameBoard;
+    public static GameManager Instance { get; set; }
+
+    private void Awake()
     {
-        _isInTurn = false;
-        EndTurn = false;
-        Debug.Log("Game Initialized");
-        CurrentState = GameState.BlackTurn;
-        pauseScreen.SetActive(false);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(this);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+
+        _currentState = new GameStartState(this);
+        _currentState.OnEnter();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) Pause();
-
-        // 플레이 중일 때
-        if (_isInTurn)
+        if (Input.anyKeyDown)
         {
-            if (EndTurn)
+            if (!_isPaused)
             {
-                PrevStones.LocateStones(CurrentStones.GetCurrentStones);
-                CheckConnections(CurrentStones.GetCurrentStones);
-                ChangeTurn();
+                if (Input.GetKeyDown(KeyCode.Return))
+                    _currentState.HandleInput("ok");
+                else if (Input.GetKeyDown(KeyCode.R))
+                    _currentState.HandleInput("rotate");
+                else if (Input.GetKeyDown(KeyCode.UpArrow))
+                    _currentState.HandleInput("up");
+                else if (Input.GetKeyDown(KeyCode.DownArrow))
+                    _currentState.HandleInput("down");
+                else if (Input.GetKeyDown(KeyCode.LeftArrow))
+                    _currentState.HandleInput("left");
+                else if (Input.GetKeyDown(KeyCode.RightArrow))
+                    _currentState.HandleInput("right");
             }
 
-            return;
+            if (Input.GetKeyDown(KeyCode.Escape)) PauseResume();
         }
 
-        // 상태가 변경될 때
-        switch (CurrentState)
-        {
-            case GameState.BlackTurn or GameState.WhiteTurn:
-                CurrentStones.StartTurn();
-                _isInTurn = true;
-                break;
-            case GameState.Pause:
-                break;
-            case GameState.CheckScores:
-                break;
-            case GameState.GameEnd:
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    // TODO: 메인 신으로 돌아가기
-                }
-
-                break;
-        }
+        _currentState.Update();
     }
 
-    public void Pause()
+    public void PauseResume()
     {
-        _isInTurn = !_isInTurn;
-
-        if (_isInTurn)
-        {
-            CurrentState = _prevState;
-            pauseScreen.SetActive(false);
-        }
-        else
-        {
-            _prevState = CurrentState;
-            CurrentState = GameState.Pause;
-            pauseScreen.SetActive(true);
-        }
+        _isPaused = !_isPaused;
+        pauseScreen.SetActive(_isPaused);
     }
 
+    public void ChangeState(IState newState)
+    {
+        _currentState.OnExit();
+        _currentState = newState;
+        _currentState.OnEnter();
+    }
+
+    // 플레이를 중지하고 점수 산정 진행
     public void EndGame()
     {
-        _isInTurn = false;
-        CurrentState = GameState.CheckScores;
-        pauseScreen.SetActive(false);
+        _currentState.OnExit();
+        _currentState = new EndGameState(this);
+        _currentState.OnEnter();
+    }
+
+    public void LoadScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
     }
 
     public void QuitGame()
@@ -90,15 +97,57 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
+    public GameObject InstantiateObject(GameObject prefab, Vector3 position, Quaternion rotation)
+    {
+        return Instantiate(prefab, position, rotation);
+    }
+
+    public void DestroyObject(GameObject target)
+    {
+        Destroy(target);
+    }
+
+    /// <summary>
+    ///     돌을 배치 및 렌더링하고, 연결 상태를 확인한다.
+    /// </summary>
+    /// <param name="stonesToPut">배치할 돌의 좌표</param>
+    /// <param name="stoneType">돌 종류 [흑/백]</param>
+    public void PutStones((int, int)[] stonesToPut, int stoneType)
+    {
+        // 돌 배치 및 렌더링
+        foreach (var (i, j) in stonesToPut)
+        {
+            GameObject stone;
+            if (Random.Range(0, 15) == 0)
+            {
+                GameBoard[i, j] = 3;
+                stone = Instantiate(bonusStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
+            }
+            else if (stoneType == 1)
+            {
+                GameBoard[i, j] = 1;
+                stone = Instantiate(blackStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
+            }
+            else
+            {
+                GameBoard[i, j] = 2;
+                stone = Instantiate(whiteStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
+            }
+
+            stone.name = i + "_" + j;
+            stone.transform.SetParent(prevStones.transform);
+        }
+
+        CheckConnections(stonesToPut, stoneType);
+    }
+
     /// <summary>
     ///     이번 턴에 놓아진 돌에서부터 가로, 세로, 대각선으로 10개 이상 연결된 돌이 있는지 판정한다.
     /// </summary>
     /// <param name="getCurrentStones"></param>
-    private void CheckConnections((int, int)[] getCurrentStones)
+    /// <param name="stoneType"></param>
+    private void CheckConnections((int, int)[] getCurrentStones, int stoneType)
     {
-        var gameBoard = MainBoard;
-        var stone = CurrentState == GameState.BlackTurn ? 1 : 2;
-
         var stonesToRemove = new List<(int, int)>();
         var deletedLines = 0;
 
@@ -117,7 +166,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 0) break;
-                if (gameBoard[--currentX, j] == stone || gameBoard[currentX, j] == 3)
+                if (GameBoard[--currentX, j] == stoneType || GameBoard[currentX, j] == 3)
                 {
                     xLength++;
                     checkingStones.Add((currentX, j));
@@ -132,7 +181,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 18) break;
-                if (gameBoard[++currentX, j] == stone || gameBoard[currentX, j] == 3)
+                if (GameBoard[++currentX, j] == stoneType || GameBoard[currentX, j] == 3)
                 {
                     xLength++;
                     checkingStones.Add((currentX, j));
@@ -166,7 +215,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentY == 0) break;
-                if (gameBoard[i, --currentY] == stone || gameBoard[i, currentY] == 3)
+                if (GameBoard[i, --currentY] == stoneType || GameBoard[i, currentY] == 3)
                 {
                     yLength++;
                     checkingStones.Add((i, currentY));
@@ -181,7 +230,7 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentY == 18) break;
-                if (gameBoard[i, ++currentY] == stone || gameBoard[i, currentY] == 3)
+                if (GameBoard[i, ++currentY] == stoneType || GameBoard[i, currentY] == 3)
                 {
                     yLength++;
                     checkingStones.Add((i, currentY));
@@ -214,7 +263,8 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 0 || currentY == 0) break;
-                if (gameBoard[--currentX, --currentY] == stone || gameBoard[currentX, currentY] == 3)
+                if (GameBoard[--currentX, --currentY] == stoneType ||
+                    GameBoard[currentX, currentY] == 3)
                 {
                     diagLength++;
                     checkingStones.Add((currentX, currentY));
@@ -230,7 +280,8 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 18 || currentY == 18) break;
-                if (gameBoard[++currentX, ++currentY] == stone || gameBoard[currentX, currentY] == 3)
+                if (GameBoard[++currentX, ++currentY] == stoneType ||
+                    GameBoard[currentX, currentY] == 3)
                 {
                     diagLength++;
                     checkingStones.Add((currentX, currentY));
@@ -263,7 +314,8 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 0 || currentY == 18) break;
-                if (gameBoard[--currentX, ++currentY] == stone || gameBoard[currentX, currentY] == 3)
+                if (GameBoard[--currentX, ++currentY] == stoneType ||
+                    GameBoard[currentX, currentY] == 3)
                 {
                     diagLength++;
                     checkingStones.Add((currentX, currentY));
@@ -279,7 +331,8 @@ public class GameManager : MonoBehaviour
             while (true)
             {
                 if (currentX == 18 || currentY == 0) break;
-                if (gameBoard[++currentX, --currentY] == stone || gameBoard[currentX, currentY] == 3)
+                if (GameBoard[++currentX, --currentY] == stoneType ||
+                    GameBoard[currentX, currentY] == 3)
                 {
                     diagLength++;
                     checkingStones.Add((currentX, currentY));
@@ -298,42 +351,26 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (CurrentState == GameState.BlackTurn)
-        {
-            BlackScore += deletedLines * 10;
-            blackScoreText.text = "흑: " + BlackScore;
-        }
+        if (stoneType == 1)
+            blackScore += deletedLines * 10;
         else
-        {
-            WhiteScore += deletedLines * 10;
-            whiteScoreText.text = "백: " + WhiteScore;
-        }
+            whiteScore += deletedLines * 10;
 
         foreach (var (i, j) in stonesToRemove)
         {
-            if (gameBoard[i, j] == 3)
+            if (GameBoard[i, j] == 3)
             {
-                if (CurrentState == GameState.BlackTurn)
-                {
-                    BlackScore += 3;
-                    blackScoreText.text = "흑: " + BlackScore;
-                }
+                if (stoneType == 1)
+                    blackScore += 3;
                 else
-                {
-                    WhiteScore += 3;
-                    whiteScoreText.text = "백: " + WhiteScore;
-                }
+                    whiteScore += 3;
             }
 
-            MainBoard[i, j] = 0;
+            GameBoard[i, j] = 0;
             Destroy(GameObject.Find(i + "_" + j));
         }
-    }
 
-    private void ChangeTurn()
-    {
-        _isInTurn = false;
-        EndTurn = false;
-        CurrentState = CurrentState == GameState.WhiteTurn ? GameState.BlackTurn : GameState.WhiteTurn;
+        blackScoreText.text = "흑: " + blackScore;
+        whiteScoreText.text = "백: " + whiteScore;
     }
 }
