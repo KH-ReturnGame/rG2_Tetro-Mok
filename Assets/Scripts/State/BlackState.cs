@@ -44,7 +44,7 @@ namespace State
         public void OnExit()
         {
             foreach (Transform stone in _parent.transform) _manager.DestroyObject(stone.gameObject);
-            _manager.PutStones(TargetStones, 1);
+            if (_canLocate) _manager.PutStones(TargetStones, 1);
             Debug.Log("Exited Black State");
         }
 

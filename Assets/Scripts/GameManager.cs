@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using State;
@@ -19,9 +20,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] public TextMeshProUGUI blackScoreText, whiteScoreText;
     public int blackScore, whiteScore;
     private IState _currentState;
-    private bool _isPaused;
+    private bool _isPaused, _isGameEnded;
 
     public int[,] GameBoard;
+
     public static GameManager Instance { get; set; }
 
     private void Awake()
@@ -60,7 +62,7 @@ public class GameManager : MonoBehaviour
                     _currentState.HandleInput("right");
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape)) PauseResume();
+            if (Input.GetKeyDown(KeyCode.Escape) && !_isGameEnded) PauseResume();
         }
 
         _currentState.Update();
@@ -70,6 +72,12 @@ public class GameManager : MonoBehaviour
     {
         _isPaused = !_isPaused;
         pauseScreen.SetActive(_isPaused);
+    }
+
+    public void UpdateScores()
+    {
+        blackScoreText.text = "흑: " + blackScore;
+        whiteScoreText.text = "백: " + whiteScore;
     }
 
     public void ChangeState(IState newState)
@@ -82,8 +90,10 @@ public class GameManager : MonoBehaviour
     // 플레이를 중지하고 점수 산정 진행
     public void EndGame()
     {
+        PauseResume();
+        _isGameEnded = true;
         _currentState.OnExit();
-        _currentState = new EndGameState(this);
+        _currentState = new EndGameState(this, GameBoard);
         _currentState.OnEnter();
     }
 
@@ -370,7 +380,16 @@ public class GameManager : MonoBehaviour
             Destroy(GameObject.Find(i + "_" + j));
         }
 
-        blackScoreText.text = "흑: " + blackScore;
-        whiteScoreText.text = "백: " + whiteScore;
+        UpdateScores();
+    }
+
+    public GameObject GetStoneByPos(int x, int y)
+    {
+        return GameObject.Find(x + "_" + y);
+    }
+
+    public void StartEffectCoroutine(IEnumerator coroutine)
+    {
+        StartCoroutine(coroutine);
     }
 }
