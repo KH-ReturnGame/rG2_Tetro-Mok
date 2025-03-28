@@ -18,10 +18,8 @@ namespace State
         public void OnEnter()
         {
             Debug.Log("End Game State Entered");
+            SoundManager.PauseResumeBgm();
             var stonesToAnimate = new List<List<Vector2Int>>();
-
-            // TODO: 대각선 및 보너스 돌로 시작할 때 처리 필요
-            // TODO: 점수 계산 필요
 
             // 가로 연결 탐색
             for (var y = 18; y >= 0; y--)
@@ -47,7 +45,7 @@ namespace State
                     // 첫 돌이 놓여있을 때
                     if (checkingStoneType == 0)
                     {
-                        checkingStoneType = _gameBoard[x, y];
+                        if (_gameBoard[x, y] != 3) checkingStoneType = _gameBoard[x, y];
                         connectionLength++;
                     }
                     // 같은 색 돌이 놓여있을 때
@@ -96,7 +94,7 @@ namespace State
                     // 첫 돌이 놓여있을 때
                     if (checkingStoneType == 0)
                     {
-                        checkingStoneType = _gameBoard[x, y];
+                        if (_gameBoard[x, y] != 3) checkingStoneType = _gameBoard[x, y];
                         connectionLength++;
                     }
                     // 같은 색 돌이 놓여있을 때
@@ -144,7 +142,7 @@ namespace State
 
                     if (checkingStoneType == 0)
                     {
-                        checkingStoneType = _gameBoard[x, y];
+                        if (_gameBoard[x, y] != 3) checkingStoneType = _gameBoard[x, y];
                         connectionLength++;
                     }
                     else if (_gameBoard[x, y] == checkingStoneType || _gameBoard[x, y] == 3)
@@ -179,7 +177,7 @@ namespace State
                         {
                             var currentConnections = new List<Vector2Int>();
                             for (var i = 0; i < connectionLength; i++)
-                                currentConnections.Add(new Vector2Int(x + i - 1, y - i + 1));
+                                currentConnections.Add(new Vector2Int(x + i + 1, y - i - 1));
                             stonesToAnimate.Add(currentConnections);
                         }
 
@@ -190,7 +188,7 @@ namespace State
 
                     if (checkingStoneType == 0)
                     {
-                        checkingStoneType = _gameBoard[x, y];
+                        if (_gameBoard[x, y] != 3) checkingStoneType = _gameBoard[x, y];
                         connectionLength++;
                     }
                     else if (_gameBoard[x, y] == checkingStoneType || _gameBoard[x, y] == 3)
@@ -202,8 +200,8 @@ namespace State
                         if (connectionLength >= 5)
                         {
                             var currentConnections = new List<Vector2Int>();
-                            for (var i = connectionLength; i > 0; i--)
-                                currentConnections.Add(new Vector2Int(x + i, y - i));
+                            for (var i = 0; i < connectionLength; i++)
+                                currentConnections.Add(new Vector2Int(x + i + 1, y - i - 1));
                             stonesToAnimate.Add(currentConnections);
                         }
 
@@ -240,16 +238,27 @@ namespace State
 
                 foreach (var pos in group)
                 {
+                    SoundManager.PlaySound("Point");
                     var stone = _manager.GetStoneByPos(pos.x, pos.y);
                     if (stone != null)
                     {
-                        if (stone.GetComponent<StoneType>().stoneType != 3)
-                            stoneType = stone.GetComponent<StoneType>().stoneType;
-                        else bonusNumber++;
+                        if (stone.GetComponent<StoneType>().stoneType == 1)
+                        {
+                            stoneType = 1;
+                            stone.GetComponent<SpriteRenderer>().sprite = _manager.blackChecking;
+                        }
+                        else if (stone.GetComponent<StoneType>().stoneType == 2)
+                        {
+                            stoneType = 2;
+                            stone.GetComponent<SpriteRenderer>().sprite = _manager.whiteChecking;
+                        }
+                        else
+                        {
+                            bonusNumber++;
+                            stone.GetComponent<SpriteRenderer>().sprite = _manager.bonusChecking;
+                        }
 
-                        // 효과 적용 (예: 색상 변경)
-                        stone.GetComponent<SpriteRenderer>().color = Color.red; // TODO: 효과 변경
-                        yield return new WaitForSeconds(0.05f);
+                        yield return new WaitForSeconds(0.01f);
                     }
                 }
 
@@ -257,14 +266,30 @@ namespace State
                 else _manager.UpdateScores(0, 5 + bonusNumber * 3);
 
                 yield return new WaitForSeconds(0.5f);
+
+                foreach (var pos in group)
+                {
+                    var stone = _manager.GetStoneByPos(pos.x, pos.y);
+                    if (stone != null)
+                    {
+                        if (stone.GetComponent<StoneType>().stoneType == 1)
+                            stone.GetComponent<SpriteRenderer>().sprite = _manager.blackNormal;
+                        else if (stone.GetComponent<StoneType>().stoneType == 2)
+                            stone.GetComponent<SpriteRenderer>().sprite = _manager.whiteNormal;
+                        else stone.GetComponent<SpriteRenderer>().sprite = _manager.bonusNormal;
+                    }
+                }
             }
 
-            if (_manager.blackScore > _manager.whiteScore)
+            yield return new WaitForSeconds(2f);
+
+            if (_manager.BlackScore > _manager.WhiteScore)
             {
                 Debug.Log("Black Wins!");
                 _manager.SetGameEndScreen(1);
             }
-            else if (_manager.blackScore < _manager.whiteScore)
+
+            else if (_manager.BlackScore < _manager.WhiteScore)
             {
                 Debug.Log("White Wins!");
                 _manager.SetGameEndScreen(2);

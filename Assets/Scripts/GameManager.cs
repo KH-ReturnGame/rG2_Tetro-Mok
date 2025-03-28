@@ -7,21 +7,45 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] public GameObject blackStone,
-        whiteStone,
-        blackStoneNew,
-        whiteStoneNew,
-        blackStoneError,
-        whiteStoneError,
-        bonusStone;
+    [Header("Stone Prefabs")] [SerializeField]
+    public GameObject blackStone;
 
-    [SerializeField] public GameObject pauseScreen, gameEndScreen, currentStones, prevStones;
-    [SerializeField] public TextMeshProUGUI blackScoreText, whiteScoreText, resultText;
-    public int blackScore, whiteScore;
+    public GameObject whiteStone;
+    public GameObject blackStoneNew;
+    public GameObject whiteStoneNew;
+    public GameObject blackStoneError;
+    public GameObject whiteStoneError;
+    public GameObject bonusStone;
+
+    [Space(10)] [Header("Sprites")] [SerializeField]
+    public Sprite blackNormal;
+
+    public Sprite whiteNormal;
+    public Sprite blackChecking;
+    public Sprite whiteChecking;
+    public Sprite bonusNormal;
+    public Sprite bonusChecking;
+
+    [Space(10)] [Header("UI Objects")] [SerializeField]
+    public GameObject pauseScreen;
+
+    public GameObject gameEndScreen;
+    public GameObject currentStones;
+    public GameObject prevStones;
+
+    [Space(10)] [Header("TMPs")] [SerializeField]
+    public TextMeshProUGUI blackScoreText;
+
+    public TextMeshProUGUI whiteScoreText;
+    public TextMeshProUGUI resultText;
+
     private IState _currentState;
     private bool _isPaused, _isGameEnded;
 
     public int[,] GameBoard;
+    public int BlackScore { get; private set; }
+
+    public int WhiteScore { get; private set; }
 
     private void Start()
     {
@@ -59,14 +83,16 @@ public class GameManager : MonoBehaviour
     {
         _isPaused = !_isPaused;
         pauseScreen.SetActive(_isPaused);
+        SoundManager.PauseResumeBgm();
+        SoundManager.PlaySound("UI");
     }
 
     public void UpdateScores(int black, int white)
     {
-        blackScore += black;
-        whiteScore += white;
-        blackScoreText.text = "흑: " + blackScore;
-        whiteScoreText.text = "백: " + whiteScore;
+        BlackScore += black;
+        WhiteScore += white;
+        blackScoreText.text = "흑: " + BlackScore;
+        whiteScoreText.text = "백: " + WhiteScore;
     }
 
     public void ChangeState(IState newState)
@@ -116,6 +142,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
+        SoundManager.PlaySound("GameWin");
         gameEndScreen.SetActive(true);
     }
 
@@ -150,6 +177,7 @@ public class GameManager : MonoBehaviour
             stone.transform.SetParent(prevStones.transform);
         }
 
+        SoundManager.PlaySound(""); // TODO: Put Stone Sound
         CheckConnections(stonesToPut, stoneType);
     }
 
@@ -367,6 +395,8 @@ public class GameManager : MonoBehaviour
             UpdateScores(deletedLines * 10, 0);
         else
             UpdateScores(0, deletedLines * 10);
+
+        if (deletedLines > 0) SoundManager.PlaySound("Remove");
 
         foreach (var (i, j) in stonesToRemove)
         {
