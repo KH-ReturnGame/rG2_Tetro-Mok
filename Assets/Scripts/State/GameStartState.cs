@@ -15,6 +15,7 @@ namespace State
         {
             Debug.Log("Entered Game Start State");
             _manager.pauseScreen.SetActive(false);
+            _manager.gameEndScreen.SetActive(false);
             _manager.GameBoard = new int[19, 19];
             _manager.blackScore = 0;
             _manager.whiteScore = 0;
