@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5688448061513704307}
   - component: {fileID: 2019414500488787085}
+  - component: {fileID: 6421182989869358044}
   m_Layer: 0
   m_Name: BlackStone
   m_TagString: Untagged
@@ -87,3 +88,16 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &6421182989869358044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081932123705045140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 059556691b9e41f2adf82d5a35a8a8cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stoneType: 1

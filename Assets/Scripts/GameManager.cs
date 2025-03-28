@@ -4,7 +4,6 @@ using System.Linq;
 using State;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,28 +15,16 @@ public class GameManager : MonoBehaviour
         whiteStoneError,
         bonusStone;
 
-    [SerializeField] public GameObject pauseScreen, currentStones, prevStones;
-    [SerializeField] public TextMeshProUGUI blackScoreText, whiteScoreText;
+    [SerializeField] public GameObject pauseScreen, gameEndScreen, currentStones, prevStones;
+    [SerializeField] public TextMeshProUGUI blackScoreText, whiteScoreText, resultText;
     public int blackScore, whiteScore;
     private IState _currentState;
     private bool _isPaused, _isGameEnded;
 
     public int[,] GameBoard;
 
-    public static GameManager Instance { get; set; }
-
-    private void Awake()
+    private void Start()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(this);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
         _currentState = new GameStartState(this);
         _currentState.OnEnter();
     }
@@ -74,8 +61,10 @@ public class GameManager : MonoBehaviour
         pauseScreen.SetActive(_isPaused);
     }
 
-    public void UpdateScores()
+    public void UpdateScores(int black, int white)
     {
+        blackScore += black;
+        whiteScore += white;
         blackScoreText.text = "흑: " + blackScore;
         whiteScoreText.text = "백: " + whiteScore;
     }
@@ -97,14 +86,9 @@ public class GameManager : MonoBehaviour
         _currentState.OnEnter();
     }
 
-    public void LoadScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-    }
-
     public void QuitGame()
     {
-        Application.Quit();
+        SceneHandler.LoadScene("TitleScene");
     }
 
     public GameObject InstantiateObject(GameObject prefab, Vector3 position, Quaternion rotation)
@@ -115,6 +99,24 @@ public class GameManager : MonoBehaviour
     public void DestroyObject(GameObject target)
     {
         Destroy(target);
+    }
+
+    public void SetGameEndScreen(int whoWins)
+    {
+        switch (whoWins)
+        {
+            case 0:
+                resultText.text = "DRAW!";
+                break;
+            case 1:
+                resultText.text = "BLACK WINS!";
+                break;
+            case 2:
+                resultText.text = "WHITE WINS!";
+                break;
+        }
+
+        gameEndScreen.SetActive(true);
     }
 
     /// <summary>
@@ -362,25 +364,23 @@ public class GameManager : MonoBehaviour
         }
 
         if (stoneType == 1)
-            blackScore += deletedLines * 10;
+            UpdateScores(deletedLines * 10, 0);
         else
-            whiteScore += deletedLines * 10;
+            UpdateScores(0, deletedLines * 10);
 
         foreach (var (i, j) in stonesToRemove)
         {
             if (GameBoard[i, j] == 3)
             {
                 if (stoneType == 1)
-                    blackScore += 3;
+                    UpdateScores(3, 0);
                 else
-                    whiteScore += 3;
+                    UpdateScores(0, 3);
             }
 
             GameBoard[i, j] = 0;
             Destroy(GameObject.Find(i + "_" + j));
         }
-
-        UpdateScores();
     }
 
     public GameObject GetStoneByPos(int x, int y)

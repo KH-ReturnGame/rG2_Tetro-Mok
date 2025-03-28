@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7231847337746014227}
   - component: {fileID: 3719194254780609331}
+  - component: {fileID: 4435169606561382454}
   m_Layer: 0
   m_Name: WhiteStone
   m_TagString: Untagged
@@ -87,3 +88,16 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4435169606561382454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5886991509698167153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 059556691b9e41f2adf82d5a35a8a8cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stoneType: 2
