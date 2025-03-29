@@ -1421,6 +1421,8 @@ MonoBehaviour:
   blackScoreText: {fileID: 807261180}
   whiteScoreText: {fileID: 2007706962}
   resultText: {fileID: 168129710}
+  holdThreshold: 0.7
+  interval: 0.05
 --- !u!4 &703995610
 Transform:
   m_ObjectHideFlags: 0

@@ -38,8 +38,11 @@ public class GameManager : MonoBehaviour
 
     public TextMeshProUGUI whiteScoreText;
     public TextMeshProUGUI resultText;
+    public float holdThreshold = 1f;
+    public float interval = 0.5f;
 
     private IState _currentState;
+
     private bool _isPaused, _isGameEnded;
 
     public int[,] GameBoard;
@@ -59,24 +62,47 @@ public class GameManager : MonoBehaviour
         {
             if (!_isPaused)
             {
-                if (Input.GetKeyDown(KeyCode.Return))
-                    _currentState.HandleInput("ok");
-                else if (Input.GetKeyDown(KeyCode.R))
-                    _currentState.HandleInput("rotate");
-                else if (Input.GetKeyDown(KeyCode.UpArrow))
-                    _currentState.HandleInput("up");
-                else if (Input.GetKeyDown(KeyCode.DownArrow))
-                    _currentState.HandleInput("down");
-                else if (Input.GetKeyDown(KeyCode.LeftArrow))
-                    _currentState.HandleInput("left");
-                else if (Input.GetKeyDown(KeyCode.RightArrow))
-                    _currentState.HandleInput("right");
+                if (Input.GetKeyDown(KeyCode.Return)) _currentState.HandleInput("ok");
+                if (Input.GetKeyDown(KeyCode.R)) _currentState.HandleInput("rotate");
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                    StartCoroutine(CheckHoldTime(KeyCode.UpArrow, "up"));
+
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                    StartCoroutine(CheckHoldTime(KeyCode.DownArrow, "down"));
+
+                if (Input.GetKeyDown(KeyCode.LeftArrow))
+                    StartCoroutine(CheckHoldTime(KeyCode.LeftArrow, "left"));
+
+                if (Input.GetKeyDown(KeyCode.RightArrow))
+                    StartCoroutine(CheckHoldTime(KeyCode.RightArrow, "right"));
             }
 
             if (Input.GetKeyDown(KeyCode.Escape) && !_isGameEnded) PauseResume();
         }
 
+
         _currentState.Update();
+    }
+
+
+    private IEnumerator CheckHoldTime(KeyCode key, string moveDirection)
+    {
+        _currentState.HandleInput(moveDirection);
+        var holdTime = 0f;
+
+        while (holdTime < holdThreshold && Input.GetKey(key))
+        {
+            holdTime += Time.deltaTime;
+            yield return null;
+        }
+
+        if (!Input.GetKey(key)) yield break;
+
+        while (Input.GetKey(key))
+        {
+            _currentState.HandleInput(moveDirection);
+            yield return new WaitForSeconds(interval);
+        }
     }
 
     public void PauseResume()
