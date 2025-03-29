@@ -119,7 +119,7 @@ namespace State
                 }
             }
 
-            // x - y = constant 대각선 탐색
+            // 왼쪽 위에서 오른쪽 아래 대각선 탐색
             for (var startX = 0; startX < 19; startX++)
             {
                 int checkingStoneType = 0, connectionLength = 0;
@@ -165,19 +165,18 @@ namespace State
                 }
             }
 
-            // x + y = constant 대각선 탐색
-            for (var startX = 18; startX >= 0; startX--)
+            for (var startY = 1; startY < 19; startY++)
             {
                 int checkingStoneType = 0, connectionLength = 0;
-                for (int x = startX, y = 0; x >= 0 && y < 19; x--, y++)
+                for (int x = 0, y = startY; x < 19 && y < 19; x++, y++)
                 {
                     if (_gameBoard[x, y] == 0)
                     {
                         if (connectionLength >= 5)
                         {
                             var currentConnections = new List<Vector2Int>();
-                            for (var i = 0; i < connectionLength; i++)
-                                currentConnections.Add(new Vector2Int(x + i + 1, y - i - 1));
+                            for (var i = connectionLength; i > 0; i--)
+                                currentConnections.Add(new Vector2Int(x - i, y - i));
                             stonesToAnimate.Add(currentConnections);
                         }
 
@@ -200,8 +199,99 @@ namespace State
                         if (connectionLength >= 5)
                         {
                             var currentConnections = new List<Vector2Int>();
-                            for (var i = 0; i < connectionLength; i++)
-                                currentConnections.Add(new Vector2Int(x + i + 1, y - i - 1));
+                            for (var i = connectionLength; i > 0; i--)
+                                currentConnections.Add(new Vector2Int(x - i, y - i));
+                            stonesToAnimate.Add(currentConnections);
+                        }
+
+                        checkingStoneType = _gameBoard[x, y];
+                        connectionLength = 1;
+                    }
+                }
+            }
+
+            // 오른쪽 위에서 왼쪽 아래 대각선 탐색
+            for (var startX = 18; startX >= 0; startX--)
+            {
+                int checkingStoneType = 0, connectionLength = 0;
+                for (int x = startX, y = 0; x >= 0 && y < 19; x--, y++)
+                {
+                    if (_gameBoard[x, y] == 0)
+                    {
+                        if (connectionLength >= 5)
+                        {
+                            var currentConnections = new List<Vector2Int>();
+                            for (var i = connectionLength; i > 0; i--)
+                                currentConnections.Add(new Vector2Int(x + i, y - i));
+                            stonesToAnimate.Add(currentConnections);
+                        }
+
+                        checkingStoneType = 0;
+                        connectionLength = 0;
+                        continue;
+                    }
+
+                    if (checkingStoneType == 0)
+                    {
+                        if (_gameBoard[x, y] != 3) checkingStoneType = _gameBoard[x, y];
+                        connectionLength++;
+                    }
+                    else if (_gameBoard[x, y] == checkingStoneType || _gameBoard[x, y] == 3)
+                    {
+                        connectionLength++;
+                    }
+                    else
+                    {
+                        if (connectionLength >= 5)
+                        {
+                            var currentConnections = new List<Vector2Int>();
+                            for (var i = connectionLength; i > 0; i--)
+                                currentConnections.Add(new Vector2Int(x + i, y - i));
+                            stonesToAnimate.Add(currentConnections);
+                        }
+
+                        checkingStoneType = _gameBoard[x, y];
+                        connectionLength = 1;
+                    }
+                }
+            }
+
+            for (var startY = 1; startY < 19; startY++)
+            {
+                int checkingStoneType = 0, connectionLength = 0;
+                for (int x = 18, y = startY; x >= 0 && y < 19; x--, y++)
+                {
+                    if (_gameBoard[x, y] == 0)
+                    {
+                        if (connectionLength >= 5)
+                        {
+                            var currentConnections = new List<Vector2Int>();
+                            for (var i = connectionLength; i > 0; i--)
+                                currentConnections.Add(new Vector2Int(x + i, y - i));
+                            stonesToAnimate.Add(currentConnections);
+                        }
+
+                        checkingStoneType = 0;
+                        connectionLength = 0;
+                        continue;
+                    }
+
+                    if (checkingStoneType == 0)
+                    {
+                        if (_gameBoard[x, y] != 3) checkingStoneType = _gameBoard[x, y];
+                        connectionLength++;
+                    }
+                    else if (_gameBoard[x, y] == checkingStoneType || _gameBoard[x, y] == 3)
+                    {
+                        connectionLength++;
+                    }
+                    else
+                    {
+                        if (connectionLength >= 5)
+                        {
+                            var currentConnections = new List<Vector2Int>();
+                            for (var i = connectionLength; i > 0; i--)
+                                currentConnections.Add(new Vector2Int(x + i, y - i));
                             stonesToAnimate.Add(currentConnections);
                         }
 
