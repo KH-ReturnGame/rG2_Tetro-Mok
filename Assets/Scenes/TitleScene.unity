@@ -360,7 +360,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 528764431}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d59c3d955e492a43b3c2661c44c3084, type: 3}
+  m_Script: {fileID: 11500000, guid: 015c132387c10ae4db3cfa91adb5b7de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &713630903
@@ -939,7 +939,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: GameScene
+          m_StringArgument: LocalGameScene
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1166560973
@@ -1065,15 +1065,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1212640207}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1007f2f54234b245885641f35504f4c, type: 3}
+  m_Script: {fileID: 11500000, guid: f5dd19821e039f941a7fa848ba6a465a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgSprites:
-  - {fileID: 21300000, guid: 5d341f655c6ea0f4f87d0b2ca1cde02b, type: 3}
-  - {fileID: 21300000, guid: 187edcba14dc88847b4454a79856e769, type: 3}
-  - {fileID: 21300000, guid: 5022a7be9184d774c9b6b80cf85ba8a3, type: 3}
+  bgSprites: []
   fadeDuration: 1
-  uiImage: {fileID: 1212640209}
+  uiImage: {fileID: 0}
 --- !u!1 &1281800425
 GameObject:
   m_ObjectHideFlags: 0
@@ -1466,7 +1463,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1509580214}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e186f69e038d114db7a540b3b83fc26, type: 3}
+  m_Script: {fileID: 11500000, guid: 14a2dac9daf0b4841a476ecd37fcf9e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1562108832
@@ -1885,7 +1882,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1773393341}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5068d437065c40079d98a3fc10c5abe3, type: 3}
+  m_Script: {fileID: 11500000, guid: 71aa72d44069d0c498478536a6174a83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1773393343
