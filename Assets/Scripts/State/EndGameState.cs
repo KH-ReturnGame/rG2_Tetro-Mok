@@ -375,18 +375,18 @@ namespace State
 
             if (_manager.BlackScore > _manager.WhiteScore)
             {
-                Debug.Log("Black Wins!");
+                Debug.Log("바둑이 승리!");
                 _manager.SetGameEndScreen(1);
             }
 
             else if (_manager.BlackScore < _manager.WhiteScore)
             {
-                Debug.Log("White Wins!");
+                Debug.Log("흰둥이 승리!");
                 _manager.SetGameEndScreen(2);
             }
             else
             {
-                Debug.Log("Draw!");
+                Debug.Log("비김!");
                 _manager.SetGameEndScreen(0);
             }
         }

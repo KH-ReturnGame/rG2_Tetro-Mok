@@ -158,13 +158,13 @@ public class GameManager : MonoBehaviour
         switch (whoWins)
         {
             case 0:
-                resultText.text = "DRAW!";
+                resultText.text = "비김!";
                 break;
             case 1:
-                resultText.text = "BLACK WINS!";
+                resultText.text = "바둑이 승리!";
                 break;
             case 2:
-                resultText.text = "WHITE WINS!";
+                resultText.text = "흰둥이 승리!";
                 break;
         }
 
