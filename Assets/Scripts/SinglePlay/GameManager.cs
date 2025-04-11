@@ -15,9 +15,7 @@ namespace SinglePlay
 
         public GameObject whiteStone;
         public GameObject blackStoneNew;
-        public GameObject whiteStoneNew;
         public GameObject blackStoneError;
-        public GameObject whiteStoneError;
         public GameObject bonusStone;
 
         [Space(10)] [Header("Sprites")] [SerializeField]
