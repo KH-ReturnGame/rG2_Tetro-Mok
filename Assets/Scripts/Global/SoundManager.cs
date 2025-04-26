@@ -4,49 +4,74 @@ namespace Global
 {
     public class SoundManager : MonoBehaviour
     {
-        private static AudioClip _gameWin, _gameLose, _point, _remove, _ui;
-        private static AudioSource _audioSource, _bgm;
-        [SerializeField] private AudioClip gameWin, gameLose, point, remove, ui;
-        [SerializeField] private AudioSource bgm;
+        private static AudioClip _gameWin, _gameLose, _point, _remove, _ui, _bgm;
+        private static AudioSource _sfxSource, _bgmSource;
+
+        public static SoundManager instance;
+        [SerializeField] private AudioClip gameWin, gameLose, point, remove, ui, bgm;
 
         private void Awake()
         {
-            _audioSource = GetComponent<AudioSource>();
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+            DontDestroyOnLoad(this);
+
+            _bgmSource = gameObject.AddComponent<AudioSource>();
+            _sfxSource = gameObject.AddComponent<AudioSource>();
+
+            _bgm = bgm;
             _gameWin = gameWin;
             _gameLose = gameLose;
             _point = point;
             _remove = remove;
             _ui = ui;
-            _bgm = bgm;
-        }
 
+            _bgmSource.clip = _bgm;
+            _bgmSource.loop = true;
+        }
 
         public static void PlaySound(string soundName)
         {
             switch (soundName)
             {
                 case "GameWin":
-                    _audioSource.PlayOneShot(_gameWin, 0.5f);
+                    _sfxSource.PlayOneShot(_gameWin, 0.5f);
                     break;
                 case "GameLose":
-                    _audioSource.PlayOneShot(_gameLose, 0.5f);
+                    _sfxSource.PlayOneShot(_gameLose, 0.5f);
                     break;
                 case "Point":
-                    _audioSource.PlayOneShot(_point);
+                    _sfxSource.PlayOneShot(_point);
                     break;
                 case "Remove":
-                    _audioSource.PlayOneShot(_remove, 0.5f);
+                    _sfxSource.PlayOneShot(_remove, 0.5f);
                     break;
                 case "UI":
-                    _audioSource.PlayOneShot(_ui);
+                    _sfxSource.PlayOneShot(_ui);
                     break;
             }
         }
 
         public static void PauseResumeBgm()
         {
-            if (_bgm.isPlaying) _bgm.Pause();
-            else _bgm.UnPause();
+            if (_bgmSource.isPlaying) _bgmSource.Pause();
+            else _bgmSource.UnPause();
+        }
+
+        public static void PlayBgm()
+        {
+            _bgmSource.Play();
+        }
+
+        public static void StopAllSounds()
+        {
+            _bgmSource.Stop();
+            _sfxSource.Stop();
         }
     }
 }

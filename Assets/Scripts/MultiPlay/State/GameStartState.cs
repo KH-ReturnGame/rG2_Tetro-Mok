@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Global;
+using UnityEngine;
 
 namespace MultiPlay.State
 {
@@ -14,6 +15,7 @@ namespace MultiPlay.State
         public void OnEnter()
         {
             Debug.Log("Entered Game Start State");
+            SoundManager.PlayBgm();
             _manager.pauseScreen.SetActive(false);
             _manager.gameEndScreen.SetActive(false);
             _manager.GameBoard = new int[19, 19];

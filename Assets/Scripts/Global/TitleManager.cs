@@ -9,6 +9,7 @@ namespace Global
 
         private void Start()
         {
+            SoundManager.StopAllSounds();
             modeButtons.SetActive(false);
             otherButtons.SetActive(true);
         }
@@ -22,10 +23,12 @@ namespace Global
         {
             modeButtons.SetActive(true);
             otherButtons.SetActive(false);
+            SoundManager.PlaySound("UI");
         }
 
         public void ExitGame()
         {
+            SoundManager.PlaySound("UI");
             Application.Quit();
         }
     }
