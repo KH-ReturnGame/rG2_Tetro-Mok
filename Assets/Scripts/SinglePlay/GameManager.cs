@@ -39,8 +39,8 @@ namespace SinglePlay
 
         public TextMeshProUGUI whiteScoreText;
         public TextMeshProUGUI resultText;
-        public float holdThreshold = 1f;
-        public float interval = 0.5f;
+        public float holdThreshold = 0.7f;
+        public float interval = 0.05f;
 
         private IState _currentState;
 

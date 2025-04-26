@@ -8,6 +8,7 @@ namespace Global
         private static AudioSource _sfxSource, _bgmSource;
 
         public static SoundManager instance;
+        private static float _bgmVolume, _sfxVolume, _gameEndVolume;
         [SerializeField] private AudioClip gameWin, gameLose, point, remove, ui, bgm;
 
         private void Awake()
@@ -33,6 +34,11 @@ namespace Global
 
             _bgmSource.clip = _bgm;
             _bgmSource.loop = true;
+
+            _bgmVolume = 1f;
+            _sfxVolume = 1f;
+            _gameEndVolume = 1f;
+            _bgmSource.volume = _bgmVolume;
         }
 
         public static void PlaySound(string soundName)
@@ -40,19 +46,19 @@ namespace Global
             switch (soundName)
             {
                 case "GameWin":
-                    _sfxSource.PlayOneShot(_gameWin, 0.5f);
+                    _sfxSource.PlayOneShot(_gameWin, 0.3f * _gameEndVolume);
                     break;
                 case "GameLose":
-                    _sfxSource.PlayOneShot(_gameLose, 0.5f);
+                    _sfxSource.PlayOneShot(_gameLose, 0.3f * _gameEndVolume);
                     break;
                 case "Point":
-                    _sfxSource.PlayOneShot(_point);
+                    _sfxSource.PlayOneShot(_point, _sfxVolume);
                     break;
                 case "Remove":
-                    _sfxSource.PlayOneShot(_remove, 0.5f);
+                    _sfxSource.PlayOneShot(_remove, 0.5f * _sfxVolume);
                     break;
                 case "UI":
-                    _sfxSource.PlayOneShot(_ui);
+                    _sfxSource.PlayOneShot(_ui, 2f * _sfxVolume);
                     break;
             }
         }
@@ -72,6 +78,27 @@ namespace Global
         {
             _bgmSource.Stop();
             _sfxSource.Stop();
+        }
+
+        public static void SetVolume(string soundName, float volume)
+        {
+            if (soundName == "BGM")
+            {
+                _bgmVolume = volume;
+                _bgmSource.volume = _bgmVolume;
+            }
+            else if (soundName == "SFX")
+            {
+                _sfxVolume = volume;
+            }
+            else if (soundName == "GameEnd")
+            {
+                _gameEndVolume = volume;
+            }
+            else
+            {
+                Debug.Log("Wrong Sound Name. Please Check It Again.");
+            }
         }
     }
 }

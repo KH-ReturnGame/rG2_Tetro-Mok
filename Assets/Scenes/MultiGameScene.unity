@@ -1495,8 +1495,8 @@ MonoBehaviour:
   blackScoreText: {fileID: 1323813960}
   whiteScoreText: {fileID: 877902650}
   resultText: {fileID: 674389352}
-  holdThreshold: 1
-  interval: 0.5
+  holdThreshold: 0.7
+  interval: 0.05
 --- !u!1 &976485959
 GameObject:
   m_ObjectHideFlags: 0

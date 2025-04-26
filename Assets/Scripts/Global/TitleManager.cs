@@ -1,19 +1,26 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace Global
 {
     public class TitleManager : MonoBehaviour
     {
         [SerializeField] private GameObject gameModePanel, optionPanel, otherButtons, optionButton, returnButton;
+        [SerializeField] private Slider bgmSlider, sfxSlider, gameEndSlider;
 
         private void Start()
         {
             SoundManager.StopAllSounds();
+
             gameModePanel.SetActive(false);
             optionPanel.SetActive(false);
             otherButtons.SetActive(true);
             optionButton.SetActive(true);
             returnButton.SetActive(false);
+
+            bgmSlider.onValueChanged.AddListener(value => SoundManager.SetVolume("BGM", value));
+            sfxSlider.onValueChanged.AddListener(value => SoundManager.SetVolume("SFX", value));
+            gameEndSlider.onValueChanged.AddListener(value => SoundManager.SetVolume("GameEnd", value));
         }
 
         private void Update()
