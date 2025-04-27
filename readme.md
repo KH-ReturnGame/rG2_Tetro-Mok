@@ -35,7 +35,7 @@
 
 ## 플레이 방법
 
-<p><img src="Assets/Graphics/howtoplay.png" width=30%></p>
+<p><img src="Assets/Graphics/howtoplay.png"></p>
 
 ## 게임 로직
 
@@ -43,7 +43,7 @@
 
 *State Pattern*을 이용해 구현한다.
 
-<p><img src="State Pattern.png" width=50%></p>
+<p><img src="State Pattern.png"></p>
 
 - GameStartState<br>보드 초기화
 - BlackState | WhiteState<br>돌 생성, 이동 및 배치
