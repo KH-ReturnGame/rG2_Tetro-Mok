@@ -18,6 +18,10 @@ namespace Global
             optionButton.SetActive(true);
             returnButton.SetActive(false);
 
+            bgmSlider.value = SoundManager.bgmVolume;
+            sfxSlider.value = SoundManager.sfxVolume;
+            gameEndSlider.value = SoundManager.gameEndVolume;
+
             bgmSlider.onValueChanged.AddListener(value => SoundManager.SetVolume("BGM", value));
             sfxSlider.onValueChanged.AddListener(value => SoundManager.SetVolume("SFX", value));
             gameEndSlider.onValueChanged.AddListener(value => SoundManager.SetVolume("GameEnd", value));

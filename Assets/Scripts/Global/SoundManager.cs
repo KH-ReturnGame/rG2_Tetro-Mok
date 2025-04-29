@@ -5,10 +5,10 @@ namespace Global
     public class SoundManager : MonoBehaviour
     {
         private static AudioClip _gameWin, _gameLose, _point, _remove, _ui, _bgm;
-        private static AudioSource _sfxSource, _bgmSource;
+        private static AudioSource _bgmSource, _sfxSource, _gameEndSource;
 
         public static SoundManager instance;
-        private static float _bgmVolume, _sfxVolume, _gameEndVolume;
+        public static float bgmVolume, sfxVolume, gameEndVolume;
         [SerializeField] private AudioClip gameWin, gameLose, point, remove, ui, bgm;
 
         private void Awake()
@@ -24,6 +24,7 @@ namespace Global
 
             _bgmSource = gameObject.AddComponent<AudioSource>();
             _sfxSource = gameObject.AddComponent<AudioSource>();
+            _gameEndSource = gameObject.AddComponent<AudioSource>();
 
             _bgm = bgm;
             _gameWin = gameWin;
@@ -35,10 +36,10 @@ namespace Global
             _bgmSource.clip = _bgm;
             _bgmSource.loop = true;
 
-            _bgmVolume = 1f;
-            _sfxVolume = 1f;
-            _gameEndVolume = 1f;
-            _bgmSource.volume = _bgmVolume;
+            bgmVolume = 1f;
+            sfxVolume = 1f;
+            gameEndVolume = 1f;
+            _bgmSource.volume = bgmVolume;
         }
 
         public static void PlaySound(string soundName)
@@ -46,19 +47,19 @@ namespace Global
             switch (soundName)
             {
                 case "GameWin":
-                    _sfxSource.PlayOneShot(_gameWin, 0.3f * _gameEndVolume);
+                    _gameEndSource.PlayOneShot(_gameWin, 0.3f * gameEndVolume);
                     break;
                 case "GameLose":
-                    _sfxSource.PlayOneShot(_gameLose, 0.3f * _gameEndVolume);
+                    _gameEndSource.PlayOneShot(_gameLose, 0.3f * gameEndVolume);
                     break;
                 case "Point":
-                    _sfxSource.PlayOneShot(_point, _sfxVolume);
+                    _sfxSource.PlayOneShot(_point, sfxVolume);
                     break;
                 case "Remove":
-                    _sfxSource.PlayOneShot(_remove, 0.5f * _sfxVolume);
+                    _sfxSource.PlayOneShot(_remove, 0.5f * sfxVolume);
                     break;
                 case "UI":
-                    _sfxSource.PlayOneShot(_ui, 2f * _sfxVolume);
+                    _sfxSource.PlayOneShot(_ui, 2f * sfxVolume);
                     break;
             }
         }
@@ -77,23 +78,23 @@ namespace Global
         public static void StopAllSounds()
         {
             _bgmSource.Stop();
-            _sfxSource.Stop();
+            _gameEndSource.Stop();
         }
 
         public static void SetVolume(string soundName, float volume)
         {
             if (soundName == "BGM")
             {
-                _bgmVolume = volume;
-                _bgmSource.volume = _bgmVolume;
+                bgmVolume = volume;
+                _bgmSource.volume = bgmVolume;
             }
             else if (soundName == "SFX")
             {
-                _sfxVolume = volume;
+                sfxVolume = volume;
             }
             else if (soundName == "GameEnd")
             {
-                _gameEndVolume = volume;
+                gameEndVolume = volume;
             }
             else
             {
