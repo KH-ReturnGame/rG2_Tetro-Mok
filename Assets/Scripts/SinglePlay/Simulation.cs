@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SinglePlay.State;
 
 namespace SinglePlay
 {
@@ -588,12 +589,18 @@ namespace SinglePlay
     {
         private readonly Random _random = new();
 
-        public (int, int, int) Run(TriminoMok rootState, int iterations = 50)
+        public (int, int, int) Run(TriminoMok rootState, int iterations, WhiteState.SharedVars sharedVars)
         {
             var root = new Node(null, null, new TriminoMok(rootState));
 
             for (var i = 0; i < iterations; i++)
             {
+                lock (sharedVars)
+                {
+                    sharedVars.Progress = (float)(i + 1) / iterations;
+                    sharedVars.IsChanged = true;
+                }
+
                 var node = root;
                 var state = new TriminoMok(root.State);
 
@@ -617,7 +624,7 @@ namespace SinglePlay
                 // 3. 시뮬레이션
                 var score = 0.0;
 
-                while (!state.IsTerminal(10))
+                while (!state.IsTerminal(5))
                 {
                     var moves = state.GetMoves();
                     if (moves.Count == 0) break;
