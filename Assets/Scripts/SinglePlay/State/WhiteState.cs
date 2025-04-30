@@ -26,13 +26,18 @@ namespace SinglePlay.State
 
             SliderController.SetScrollbarVisible(true);
 
-            _progressVars = new SharedVars();
+            lock (_progressVars)
+            {
+                _progressVars = new SharedVars();
+            }
+
             _workerThread = new Thread(() => WorkerThread(mcts, game));
             _workerThread.Start();
         }
 
         public void OnExit()
         {
+            SliderController.SetScrollbarValue(0f);
             SliderController.SetScrollbarVisible(false);
             if (_workerThread != null) _workerThread.Join();
             _manager.PutStones(_targetStones, 2);
@@ -55,6 +60,29 @@ namespace SinglePlay.State
 
         public void HandleInput(string input)
         {
+            if (input == "escape")
+            {
+                Debug.Log("Escape Pressed");
+                if (_workerThread.IsAlive)
+                {
+                    Debug.Log("Stopping worker thread");
+
+                    SliderController.SetScrollbarValue(0f);
+                    SliderController.SetScrollbarVisible(false);
+
+                    _workerThread.Abort();
+                }
+                else
+                {
+                    var game = new TriminoMok(_manager.GameBoard, Random.Range(1, 4));
+                    var mcts = new Mcts();
+
+                    SliderController.SetScrollbarVisible(true);
+
+                    _workerThread = new Thread(() => WorkerThread(mcts, game));
+                    _workerThread.Start();
+                }
+            }
         }
 
         private void WorkerThread(Mcts mcts, TriminoMok game)
@@ -68,7 +96,7 @@ namespace SinglePlay.State
         public class SharedVars
         {
             public bool IsChanged;
-            public float Progress = 0f;
+            public float Progress;
         }
     }
 }

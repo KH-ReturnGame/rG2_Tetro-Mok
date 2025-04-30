@@ -89,7 +89,11 @@ namespace SinglePlay
                         StartCoroutine(CheckHoldTime(KeyCode.D, "d"));
                 }
 
-                if (Input.GetKeyDown(KeyCode.Escape) && !_isGameEnded) PauseResume();
+                if (Input.GetKeyDown(KeyCode.Escape) && !_isGameEnded)
+                {
+                    _currentState.HandleInput("escape");
+                    PauseResume();
+                }
             }
 
 
@@ -112,7 +116,7 @@ namespace SinglePlay
 
             while (Input.GetKey(key))
             {
-                _currentState.HandleInput(moveDirection);
+                SendResumeSignal();
                 yield return new WaitForSeconds(interval);
             }
         }
@@ -140,7 +144,11 @@ namespace SinglePlay
             _currentState.OnEnter();
         }
 
-        // 플레이를 중지하고 점수 산정 진행
+        public void SendResumeSignal()
+        {
+            _currentState.HandleInput("escape");
+        }
+
         public void EndGame()
         {
             PauseResume();

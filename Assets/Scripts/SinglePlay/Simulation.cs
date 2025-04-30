@@ -154,16 +154,16 @@ namespace SinglePlay
         }
 
 
-        // TODO: 이거 하면 MCTS는 끝. 이후 Value Function 설계해야.
-        // MakeMove 이전에 동작함. 유의하세요
         public double CalculateScore(int i, int j, int r)
         {
             var score = 0.0;
 
+            // 연결 점수 산정
+
             var connectionScore = 0.0;
+
             foreach (var (y, x) in GetStones(i, j, r))
             {
-                // 가로 방향 연결 확인
                 var horizontalCount = 1;
                 var horizontalSkips = 0;
                 for (var k = 1; k < 10; k++)
@@ -213,7 +213,6 @@ namespace SinglePlay
 
                 connectionScore += Math.Min(horizontalCount, 10);
 
-                // 세로 방향 연결 확인
                 var verticalCount = 1;
                 var verticalSkips = 0;
                 for (var k = 1; k < 10; k++)
@@ -262,7 +261,6 @@ namespace SinglePlay
 
                 connectionScore += Math.Min(verticalCount, 10);
 
-                // 대각선 방향 (/) 연결 확인
                 var diagonal1Count = 1;
                 var diagonal1Skips = 0;
                 for (var k = 1; k < 10; k++)
@@ -311,7 +309,6 @@ namespace SinglePlay
 
                 connectionScore += Math.Min(diagonal1Count, 10);
 
-                // 대각선 방향 (\) 연결 확인
                 var diagonal2Count = 1;
                 var diagonal2Skips = 0;
                 for (var k = 1; k < 10; k++)
@@ -361,11 +358,11 @@ namespace SinglePlay
                 connectionScore += Math.Min(diagonal2Count, 10);
             }
 
-            // 여기에 방해 판정
+            // 방해 점수 산정
+
             var otherPlayer = 3 - _currentPlayer;
             var interferenceScore = 0;
 
-            // 가로 방향 방해 확인
             for (var m = 0; m < 19; m++)
             for (var n = 0; n < 19; n++)
                 if (_board[m, n] == otherPlayer)
@@ -382,7 +379,6 @@ namespace SinglePlay
                         interferenceScore += Math.Min(count, 8);
                 }
 
-            // 세로 방향 방해 확인
             for (var m = 0; m < 19; m++)
             for (var n = 0; n < 19; n++)
                 if (_board[m, n] == otherPlayer)
@@ -399,7 +395,6 @@ namespace SinglePlay
                         interferenceScore += Math.Min(count, 8);
                 }
 
-            // 대각선 방향 (/) 방해 확인
             for (var m = 0; m < 19; m++)
             for (var n = 0; n < 19; n++)
                 if (_board[m, n] == otherPlayer)
@@ -416,7 +411,6 @@ namespace SinglePlay
                         interferenceScore += Math.Min(count, 8);
                 }
 
-            // 대각선 방향 (\) 방해 확인
             for (var m = 0; m < 19; m++)
             for (var n = 0; n < 19; n++)
                 if (_board[m, n] == otherPlayer)
@@ -523,17 +517,15 @@ namespace SinglePlay
             return stones;
         }
 
-        // 게임 종료 여부 (승리 또는 무승부)
         public bool IsTerminal(int maxDepth)
         {
             return _depth >= maxDepth || GetMoves().Count == 0;
         }
     }
 
-    // MCTS 노드 클래스
     public class Node
     {
-        public Node((int, int, int)? move, Node? parent, TriminoMok state)
+        public Node((int, int, int)? move, Node parent, TriminoMok state)
         {
             Move = move;
             Parent = parent;
@@ -542,27 +534,24 @@ namespace SinglePlay
         }
 
         public (int, int, int)? Move { get; }
-        public Node? Parent { get; }
+        public Node Parent { get; }
         public TriminoMok State { get; }
         public List<Node> Children { get; } = new();
         public List<(int, int, int)> UntriedMoves { get; private set; }
         public int Visits { get; private set; }
         public double Score { get; private set; }
 
-        // UCB1 점수 계산
         private double Ucb1(int parentVisits)
         {
             if (Visits == 0) return double.MaxValue;
             return Score / Visits + 1.4 * Math.Sqrt(Math.Log(parentVisits) / Visits);
         }
 
-        // 가장 유망한 자식 선택
         public Node SelectChild()
         {
             return Children.OrderByDescending(c => c.Ucb1(Visits)).First();
         }
 
-        // 자식 노드 추가
         public Node AddChild((int, int, int) move, TriminoMok state)
         {
             var child = new Node(move, this, state);
@@ -570,21 +559,18 @@ namespace SinglePlay
             return child;
         }
 
-        // 통계 업데이트
         public void Update(double score)
         {
             Visits++;
             Score += score;
         }
 
-        // UntriedMoves 업데이트
         public void UpdateUntriedMoves()
         {
             UntriedMoves = State.GetMoves();
         }
     }
 
-    // MCTS 클래스
     public class Mcts
     {
         private readonly Random _random = new();
@@ -642,7 +628,6 @@ namespace SinglePlay
                 }
             }
 
-            // 가장 높은 점수를 가진 자식 노드의 수 반환
             return root.Children.OrderByDescending(c => c.Score / c.Visits).First().Move!.Value;
         }
     }

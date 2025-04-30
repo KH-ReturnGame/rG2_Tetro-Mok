@@ -19,7 +19,7 @@ namespace SinglePlay.State
             _manager.pauseScreen.SetActive(false);
             _manager.gameEndScreen.SetActive(false);
             _manager.GameBoard = new int[19, 19];
-            _manager.ChangeState(new BlackState(_manager));
+            _manager.ChangeState(new InitialBlackState(_manager));
         }
 
         public void OnExit()
@@ -33,7 +33,6 @@ namespace SinglePlay.State
 
         public void HandleInput(string input)
         {
-            if (input.Equals("start")) _manager.ChangeState(new BlackState(_manager));
         }
     }
 }
