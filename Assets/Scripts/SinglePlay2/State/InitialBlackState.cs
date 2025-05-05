@@ -81,6 +81,8 @@ namespace SinglePlay2.State
                 case "ok":
                     if (!_canLocate)
                     {
+                        _manager.Black_Agent.AddReward(-1f);
+                        _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
                         Debug.Log("Can't put stone on others");
                         break;
                     }
@@ -123,9 +125,10 @@ namespace SinglePlay2.State
                     _currentStones[9, 8] = 1;
                     break;
             }
-
+            
             _manager.CheckEndGame(_currentStones);
             RenderStones();
+            _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
         }
 
         /// <summary>
@@ -220,6 +223,7 @@ namespace SinglePlay2.State
 
                     stone.transform.SetParent(_parent.transform);
                 }
+            _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
         }
     }
 }

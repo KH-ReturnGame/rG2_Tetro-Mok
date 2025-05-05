@@ -323,73 +323,151 @@ namespace SinglePlay2.State
 
         private IEnumerator ApplyEffectsToGroups(List<List<Vector2Int>> groups)
         {
-            foreach (var group in groups)
+            if (_manager.BlackAI && _manager.WhiteAI)
             {
-                int stoneType = 0, bonusNumber = 0;
-
-                foreach (var pos in group)
+                foreach (var group in groups)
                 {
-                    SoundManager.PlaySound("Point");
-                    var stone = _manager.GetStoneByPos(pos.x, pos.y);
-                    if (stone != null)
-                    {
-                        if (stone.GetComponent<StoneType>().stoneType == 1)
-                        {
-                            stoneType = 1;
-                            stone.GetComponent<SpriteRenderer>().sprite = _manager.blackChecking;
-                        }
-                        else if (stone.GetComponent<StoneType>().stoneType == 2)
-                        {
-                            stoneType = 2;
-                            stone.GetComponent<SpriteRenderer>().sprite = _manager.whiteChecking;
-                        }
-                        else
-                        {
-                            bonusNumber++;
-                            stone.GetComponent<SpriteRenderer>().sprite = _manager.bonusChecking;
-                        }
+                    int stoneType = 0, bonusNumber = 0;
 
-                        yield return new WaitForSeconds(0.01f);
+                    foreach (var pos in group)
+                    {
+                        //SoundManager.PlaySound("Point");
+                        var stone = _manager.GetStoneByPos(pos.x, pos.y);
+                        if (stone != null)
+                        {
+                            if (stone.GetComponent<StoneType>().stoneType == 1)
+                            {
+                                stoneType = 1;
+                                //stone.GetComponent<SpriteRenderer>().sprite = _manager.blackChecking;
+                            }
+                            else if (stone.GetComponent<StoneType>().stoneType == 2)
+                            {
+                                stoneType = 2;
+                                //stone.GetComponent<SpriteRenderer>().sprite = _manager.whiteChecking;
+                            }
+                            else
+                            {
+                                bonusNumber++;
+                                //stone.GetComponent<SpriteRenderer>().sprite = _manager.bonusChecking;
+                            }
+
+                            //yield return new WaitForSeconds(0.01f);
+                        }
+                    }
+
+                    if (stoneType == 1) _manager.UpdateScores(5 + bonusNumber * 3, 0);
+                    else _manager.UpdateScores(0, 5 + bonusNumber * 3);
+
+                    //yield return new WaitForSeconds(0.5f);
+
+                    foreach (var pos in group)
+                    {
+                        var stone = _manager.GetStoneByPos(pos.x, pos.y);
+                        if (stone != null)
+                        {
+                            if (stone.GetComponent<StoneType>().stoneType == 1)
+                                stone.GetComponent<SpriteRenderer>().sprite = _manager.blackNormal;
+                            else if (stone.GetComponent<StoneType>().stoneType == 2)
+                                stone.GetComponent<SpriteRenderer>().sprite = _manager.whiteNormal;
+                            else stone.GetComponent<SpriteRenderer>().sprite = _manager.bonusNormal;
+                        }
                     }
                 }
 
-                if (stoneType == 1) _manager.UpdateScores(5 + bonusNumber * 3, 0);
-                else _manager.UpdateScores(0, 5 + bonusNumber * 3);
+                //yield return new WaitForSeconds(2f);
 
-                yield return new WaitForSeconds(0.5f);
-
-                foreach (var pos in group)
+                if (_manager.BlackScore > _manager.WhiteScore)
                 {
-                    var stone = _manager.GetStoneByPos(pos.x, pos.y);
-                    if (stone != null)
-                    {
-                        if (stone.GetComponent<StoneType>().stoneType == 1)
-                            stone.GetComponent<SpriteRenderer>().sprite = _manager.blackNormal;
-                        else if (stone.GetComponent<StoneType>().stoneType == 2)
-                            stone.GetComponent<SpriteRenderer>().sprite = _manager.whiteNormal;
-                        else stone.GetComponent<SpriteRenderer>().sprite = _manager.bonusNormal;
-                    }
+                    Debug.Log("바둑이 승리!");
+                    _manager.Black_Agent.AddReward(50f);
                 }
-            }
 
-            yield return new WaitForSeconds(2f);
-
-            if (_manager.BlackScore > _manager.WhiteScore)
-            {
-                Debug.Log("바둑이 승리!");
-                _manager.SetGameEndScreen(1);
-            }
-
-            else if (_manager.BlackScore < _manager.WhiteScore)
-            {
-                Debug.Log("흰둥이 승리!");
-                _manager.SetGameEndScreen(2);
+                else if (_manager.BlackScore < _manager.WhiteScore)
+                {
+                    Debug.Log("흰둥이 승리!");
+                    _manager.White_Agent.AddReward(50f);
+                }
+                else
+                {
+                    Debug.Log("비김!");
+                    _manager.Black_Agent.AddReward(-5f);
+                    _manager.White_Agent.AddReward(-5f);
+                }
+                _manager.Black_Agent.EndEpisode();
+                _manager.White_Agent.EndEpisode();
             }
             else
             {
-                Debug.Log("비김!");
-                _manager.SetGameEndScreen(0);
+                foreach (var group in groups)
+                {
+                    int stoneType = 0, bonusNumber = 0;
+
+                    foreach (var pos in group)
+                    {
+                        SoundManager.PlaySound("Point");
+                        var stone = _manager.GetStoneByPos(pos.x, pos.y);
+                        if (stone != null)
+                        {
+                            if (stone.GetComponent<StoneType>().stoneType == 1)
+                            {
+                                stoneType = 1;
+                                stone.GetComponent<SpriteRenderer>().sprite = _manager.blackChecking;
+                            }
+                            else if (stone.GetComponent<StoneType>().stoneType == 2)
+                            {
+                                stoneType = 2;
+                                stone.GetComponent<SpriteRenderer>().sprite = _manager.whiteChecking;
+                            }
+                            else
+                            {
+                                bonusNumber++;
+                                stone.GetComponent<SpriteRenderer>().sprite = _manager.bonusChecking;
+                            }
+
+                            yield return new WaitForSeconds(0.01f);
+                        }
+                    }
+
+                    if (stoneType == 1) _manager.UpdateScores(5 + bonusNumber * 3, 0);
+                    else _manager.UpdateScores(0, 5 + bonusNumber * 3);
+
+                    yield return new WaitForSeconds(0.5f);
+
+                    foreach (var pos in group)
+                    {
+                        var stone = _manager.GetStoneByPos(pos.x, pos.y);
+                        if (stone != null)
+                        {
+                            if (stone.GetComponent<StoneType>().stoneType == 1)
+                                stone.GetComponent<SpriteRenderer>().sprite = _manager.blackNormal;
+                            else if (stone.GetComponent<StoneType>().stoneType == 2)
+                                stone.GetComponent<SpriteRenderer>().sprite = _manager.whiteNormal;
+                            else stone.GetComponent<SpriteRenderer>().sprite = _manager.bonusNormal;
+                        }
+                    }
+                }
+
+                yield return new WaitForSeconds(2f);
+
+                if (_manager.BlackScore > _manager.WhiteScore)
+                {
+                    Debug.Log("바둑이 승리!");
+                    _manager.SetGameEndScreen(1);
+                }
+
+                else if (_manager.BlackScore < _manager.WhiteScore)
+                {
+                    Debug.Log("흰둥이 승리!");
+                    _manager.SetGameEndScreen(2);
+                }
+                else
+                {
+                    Debug.Log("비김!");
+                    _manager.SetGameEndScreen(0);
+                }
             }
+            
+            
         }
     }
 }

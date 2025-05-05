@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,9 +6,7 @@ using Global;
 using SinglePlay2.State;
 using TMPro;
 using UnityEngine;
-using Unity.MLAgents;
-using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Sensors;
+using Random = UnityEngine.Random;
 
 namespace SinglePlay2
 {
@@ -47,7 +46,7 @@ namespace SinglePlay2
         public float holdThreshold = 0.7f;
         public float interval = 0.05f;
 
-        private SinglePlay2.State.IState _currentState;
+        public IState _currentState;
 
         private bool _isPaused, _isGameEnded;
 
@@ -55,6 +54,21 @@ namespace SinglePlay2
         public int BlackScore { get; private set; }
 
         public int WhiteScore { get; private set; }
+
+        [Space(10)] [Header("ML-Agents")] [SerializeField]
+        public bool BlackAI = false;
+        public bool WhiteAI = false;
+        public MyAgent Black_Agent;
+        public MyAgent White_Agent;
+        public int[,] CurrentShape;
+        [HideInInspector]
+        public int ShapeWidth;
+        [HideInInspector]
+        public int ShapeHeight;
+        [HideInInspector]
+        public int minX, maxX, minY, maxY;
+
+        private bool AgentWorking = false;
         
         public enum MoveDirection
         {
@@ -63,16 +77,50 @@ namespace SinglePlay2
             Left,
             Right,
         }
-
-        private void Start()
+        
+        public void Restart()
         {
+            BlackScore = 0;
+            WhiteScore = 0;
+            
             _currentState = new GameStartState(this);
             _currentState.OnEnter();
         }
 
         private void Update()
         {
-            if (Input.anyKeyDown)
+            // 둘 다 사람
+            if (!BlackAI && !WhiteAI)
+            {
+                
+            }
+            // 둘 다 봇
+            else if (BlackAI && WhiteAI)
+            {
+                if (Black_Agent.status == AgentStatus.Ready && White_Agent.status == AgentStatus.Ready)
+                {
+                    Black_Agent.status = AgentStatus.Working;
+                    White_Agent.status = AgentStatus.Working;
+                    AgentWorking = true;
+                    Restart();
+                }
+                else if (Black_Agent.status == AgentStatus.ReadyToChoose)
+                {
+                    Black_Agent.RequestDecision();
+                }
+                else if (White_Agent.status == AgentStatus.ReadyToChoose)
+                {
+                    White_Agent.RequestDecision();
+                }
+            }
+            // 반 반
+            else
+            {
+                
+            }
+            
+            
+            /*if (Input.anyKeyDown)
             {
                 if (!_isPaused)
                 {
@@ -103,7 +151,7 @@ namespace SinglePlay2
                 }
 
                 if (Input.GetKeyDown(KeyCode.Escape) && !_isGameEnded) PauseResume();
-            }
+            }*/
 
 
             _currentState.Update();
@@ -285,10 +333,31 @@ namespace SinglePlay2
                         break;
                     }
                 }
+                if (xLength == 5)
+                {
+                    if (stoneType == 1)
+                    {
+                        Black_Agent.AddReward(2f);
+                    }
+                    else
+                    {
+                        White_Agent.AddReward(2f);
+                    }
+                }
 
                 if (xLength >= 10)
                 {
                     Debug.Log("Complete Line!");
+                    
+                    if (stoneType == 1)
+                    {
+                        Black_Agent.AddReward(5f);
+                    }
+                    else
+                    {
+                        White_Agent.AddReward(5f);
+                    }
+                    
                     deletedLines++;
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
@@ -335,9 +404,31 @@ namespace SinglePlay2
                     }
                 }
 
+                if (yLength == 5)
+                {
+                    if (stoneType == 1)
+                    {
+                        Black_Agent.AddReward(2f);
+                    }
+                    else
+                    {
+                        White_Agent.AddReward(2f);
+                    }
+                }
+
                 if (yLength >= 10)
                 {
                     Debug.Log("Complete Line!");
+                    
+                    if (stoneType == 1)
+                    {
+                        Black_Agent.AddReward(5f);
+                    }
+                    else
+                    {
+                        White_Agent.AddReward(5f);
+                    }
+                    
                     deletedLines++;
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
@@ -385,10 +476,32 @@ namespace SinglePlay2
                         break;
                     }
                 }
+                
+                if (diagLength == 5)
+                {
+                    if (stoneType == 1)
+                    {
+                        Black_Agent.AddReward(2f);
+                    }
+                    else
+                    {
+                        White_Agent.AddReward(2f);
+                    }
+                }
 
                 if (diagLength >= 10)
                 {
                     Debug.Log("Complete Line!");
+                    
+                    if (stoneType == 1)
+                    {
+                        Black_Agent.AddReward(5f);
+                    }
+                    else
+                    {
+                        White_Agent.AddReward(5f);
+                    }
+                    
                     deletedLines++;
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
@@ -436,10 +549,32 @@ namespace SinglePlay2
                         break;
                     }
                 }
+                
+                if (diagLength == 5)
+                {
+                    if (stoneType == 1)
+                    {
+                        Black_Agent.AddReward(2f);
+                    }
+                    else
+                    {
+                        White_Agent.AddReward(2f);
+                    }
+                }
 
                 if (diagLength >= 10)
                 {
                     Debug.Log("Complete Line!");
+                    
+                    if (stoneType == 1)
+                    {
+                        Black_Agent.AddReward(5f);
+                    }
+                    else
+                    {
+                        White_Agent.AddReward(5f);
+                    }
+                    
                     deletedLines++;
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
@@ -510,6 +645,15 @@ namespace SinglePlay2
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
                     shape[x, y] = pieceMatrix[minX + x, minY + y];
+
+            // 2.5) Agent한테 먹여줄 소중한 정보들
+            CurrentShape = shape;
+            ShapeWidth = width;
+            ShapeHeight = height;
+            this.minX = minX;
+            this.maxX = maxX;
+            this.minY = minY;
+            this.maxY = maxY;
 
             // 3) 4회전 + 모든 보드 위치에 대해 충돌 검사
             for (int rot = 0; rot < 4; rot++)

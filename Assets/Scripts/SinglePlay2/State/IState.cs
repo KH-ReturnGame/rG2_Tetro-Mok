@@ -17,4 +17,5 @@
         Rotate,
         Idle
     }
+    public enum AgentStatus { Ready,Working,ReadyToChoose }
 }
