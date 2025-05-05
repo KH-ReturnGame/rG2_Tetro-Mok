@@ -1533,6 +1533,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1167510034}
   - component: {fileID: 1167510033}
+  - component: {fileID: 1167510035}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1547,7 +1548,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1167510032}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 96b375d1ffd03b9448296f2fe2043162, type: 3}
   m_Name: 
@@ -1589,6 +1590,40 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1167510035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1167510032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0be0d6eb572c402a88e487e1fc9c053c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blackStone: {fileID: 1081932123705045140, guid: 916441d35b7d5b847850ebc67b559adc, type: 3}
+  whiteStone: {fileID: 5886991509698167153, guid: a4ff4f98d25c481468f8fc6cc07e695e, type: 3}
+  blackStoneNew: {fileID: 4363331308139856061, guid: a9e2b481f30739d47a7a64f48c44c691, type: 3}
+  whiteStoneNew: {fileID: 321561902432330289, guid: 0a55df19aeb13444dacbf7760aad12e0, type: 3}
+  blackStoneError: {fileID: 4557864372855331827, guid: b70b2b5554d6238498322425a04b99d6, type: 3}
+  whiteStoneError: {fileID: 7167970497573950219, guid: bd9d204bdfccdcc4a80a7d1b56eb77ba, type: 3}
+  bonusStone: {fileID: 7611473146234202156, guid: 917d2c026a0c18741972de028a8b71ef, type: 3}
+  blackNormal: {fileID: 21300000, guid: b36cc4a4df818954595b9264ef8bd1f8, type: 3}
+  whiteNormal: {fileID: 21300000, guid: aeec7d4e21516124382dc4cd970fdf5d, type: 3}
+  blackChecking: {fileID: 21300000, guid: b7530850e8e6b0e438b96a909266fdfc, type: 3}
+  whiteChecking: {fileID: 21300000, guid: 18a04c761e56bd24685832cfcd585724, type: 3}
+  bonusNormal: {fileID: 21300000, guid: 10330d1ee77188f4f84a383a1f0575db, type: 3}
+  bonusChecking: {fileID: 21300000, guid: bf976f3203627df4d9df63881c7bb039, type: 3}
+  pauseScreen: {fileID: 1809126052}
+  gameEndScreen: {fileID: 1908658535}
+  currentStones: {fileID: 1735442287}
+  prevStones: {fileID: 1971585455}
+  blackScoreText: {fileID: 1148280535}
+  whiteScoreText: {fileID: 952628323}
+  resultText: {fileID: 1819156676}
+  holdThreshold: 0.7
+  interval: 0.05
 --- !u!1 &1483264532
 GameObject:
   m_ObjectHideFlags: 0
