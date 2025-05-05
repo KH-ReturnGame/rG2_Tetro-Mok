@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/SingleGameScene.unity
     guid: 68c684ebf2960594d8303bc3125c139b
   - enabled: 1
+    path: Assets/Scenes/SingleGameScene2.unity
+    guid: 8e910c3da10f9ba42a6c85485d7ed364
+  - enabled: 1
     path: Assets/Scenes/MultiGameScene.unity
     guid: 92316012ea6bfa84bb727a46752e4321
   - enabled: 1

@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Global;
-using MultiPlay.State;
+using SinglePlay2.State;
 using TMPro;
 using UnityEngine;
+using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 
-namespace MultiPlay
+namespace SinglePlay2
 {
     public class GameManager : MonoBehaviour
     {
@@ -44,7 +47,7 @@ namespace MultiPlay
         public float holdThreshold = 0.7f;
         public float interval = 0.05f;
 
-        private IState _currentState;
+        private SinglePlay2.State.IState _currentState;
 
         private bool _isPaused, _isGameEnded;
 
@@ -143,7 +146,7 @@ namespace MultiPlay
             whiteScoreText.text = "백: " + WhiteScore;
         }
 
-        public void ChangeState(IState newState)
+        public void ChangeState(State.IState newState)
         {
             _currentState.OnExit();
             _currentState = newState;
@@ -156,7 +159,7 @@ namespace MultiPlay
             PauseResume();
             _isGameEnded = true;
             _currentState.OnExit();
-            _currentState = new EndGameState(this, GameBoard);
+            _currentState = new State.EndGameState(this, GameBoard);
             _currentState.OnEnter();
         }
 
@@ -496,7 +499,7 @@ namespace MultiPlay
             // 조각이 아예 없으면(비정상) 바로 종료
             if (maxX < minX || maxY < minY)
             {
-                ChangeState(new EndGameState(this, GameBoard));
+                ChangeState(new State.EndGameState(this, GameBoard));
                 return;
             }
             int width  = maxX - minX + 1;
@@ -539,7 +542,7 @@ namespace MultiPlay
             }
 
             // 4) 한번도 놓을 수 없으면 게임 종료
-            ChangeState(new EndGameState(this, GameBoard));
+            ChangeState(new State.EndGameState(this, GameBoard));
         }
 
         /// <summary>
