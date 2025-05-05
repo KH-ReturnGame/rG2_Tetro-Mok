@@ -129,7 +129,8 @@ namespace MultiPlay.State
                     _currentStones[10, 10] = 2;
                     break;
             }
-
+            
+            _manager.CheckEndGame(_currentStones);
             RenderStones();
         }
 

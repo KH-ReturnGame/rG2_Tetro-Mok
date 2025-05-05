@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace MultiPlay.State
 {
@@ -123,6 +124,7 @@ namespace MultiPlay.State
                     break;
             }
 
+            _manager.CheckEndGame(_currentStones);
             RenderStones();
         }
 

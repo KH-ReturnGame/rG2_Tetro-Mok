@@ -52,6 +52,14 @@ namespace MultiPlay
         public int BlackScore { get; private set; }
 
         public int WhiteScore { get; private set; }
+        
+        public enum MoveDirection
+        {
+            Up,
+            Down,
+            Left,
+            Right,
+        }
 
         private void Start()
         {
@@ -464,6 +472,99 @@ namespace MultiPlay
         public void StartEffectCoroutine(IEnumerator coroutine)
         {
             StartCoroutine(coroutine);
+        }
+
+        /// <summary>
+        /// 현재 조각(pieceMatrix)이 보드(GameBoard)에 더 이상 놓을 수 없는지를 판정하고,
+        /// 놓을 수 없으면 게임 종료 상태로 전환합니다.
+        /// </summary>
+        /// <param name="pieceMatrix">
+        /// 19×19 크기로, 조각 모양에 해당하는 칸만 1(또는 2)이며 나머지는 0인 배열</param>
+        public void CheckEndGame(int[,] pieceMatrix)
+        {
+            // 1) 조각의 최소 바운딩 박스(crop) 추출
+            int minX = 19, maxX = -1, minY = 19, maxY = -1;
+            for (int i = 0; i < 19; i++)
+                for (int j = 0; j < 19; j++)
+                    if (pieceMatrix[i, j] != 0)
+                    {
+                        minX = Mathf.Min(minX, i);
+                        maxX = Mathf.Max(maxX, i);
+                        minY = Mathf.Min(minY, j);
+                        maxY = Mathf.Max(maxY, j);
+                    }
+            // 조각이 아예 없으면(비정상) 바로 종료
+            if (maxX < minX || maxY < minY)
+            {
+                ChangeState(new EndGameState(this, GameBoard));
+                return;
+            }
+            int width  = maxX - minX + 1;
+            int height = maxY - minY + 1;
+
+            // 2) 바운딩 박스로 조각만 추출
+            int[,] shape = new int[width, height];
+            for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
+                    shape[x, y] = pieceMatrix[minX + x, minY + y];
+
+            // 3) 4회전 + 모든 보드 위치에 대해 충돌 검사
+            for (int rot = 0; rot < 4; rot++)
+            {
+                // 회전된 shape와 크기 얻기
+                var (rotShape, rotW, rotH) = RotateShape90(shape, width, height, rot);
+
+                // 보드 위에 놓을 수 있는 좌표 한계
+                int maxOffsetX = 19 - rotW;
+                int maxOffsetY = 19 - rotH;
+
+                for (int offY = 0; offY <= maxOffsetY; offY++)
+                {
+                    for (int offX = 0; offX <= maxOffsetX; offX++)
+                    {
+                        bool canPlace = true;
+                        // 각 셀이 비어 있는지 확인
+                        for (int x = 0; x < rotW && canPlace; x++)
+                            for (int y = 0; y < rotH; y++)
+                                if (rotShape[x, y] != 0 && GameBoard[x + offX, y + offY] != 0)
+                                {
+                                    canPlace = false;
+                                    break;
+                                }
+
+                        if (canPlace)
+                            return;  // 한 번이라도 놓을 수 있으면 게임 종료 아님
+                    }
+                }
+            }
+
+            // 4) 한번도 놓을 수 없으면 게임 종료
+            ChangeState(new EndGameState(this, GameBoard));
+        }
+
+        /// <summary>
+        /// 주어진 shape를 90° 회전(rotTimes 회)한 새 배열과 그 크기를 반환합니다.
+        /// </summary>
+        private (int[,], int, int) RotateShape90(int[,] shape, int w, int h, int rotTimes)
+        {
+            int[,] cur = shape;
+            int curW = w, curH = h;
+
+            for (int r = 0; r < rotTimes; r++)
+            {
+                // 다음 회전 상태 생성
+                int[,] next = new int[curH, curW];
+                for (int x = 0; x < curW; x++)
+                    for (int y = 0; y < curH; y++)
+                        next[y, curW - 1 - x] = cur[x, y];
+
+                cur = next;
+                int tmp = curW; 
+                curW = curH; 
+                curH = tmp;
+            }
+
+            return (cur, curW, curH);
         }
     }
 }

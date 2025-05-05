@@ -130,6 +130,7 @@ namespace MultiPlay.State
                     break;
             }
 
+            _manager.CheckEndGame(_currentStones);
             RenderStones();
         }
 
@@ -194,6 +195,7 @@ namespace MultiPlay.State
                     _currentStones[minX + i + moveX, minY + j + moveY] = shape[i, j];
             }
 
+            Debug.Log("height : "+height+"\nwidth : "+width+"shape : \n"+shape);
             RenderStones();
         }
 
