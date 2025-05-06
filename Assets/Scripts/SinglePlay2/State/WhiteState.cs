@@ -75,36 +75,36 @@ namespace SinglePlay2.State
                     _direction = MoveDirection.Up;
                     //ebug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-move_count);
-                    move_count++;
+                    _manager.White_Agent.AddReward(-1);
+                    //move_count++;
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-move_count);
-                    move_count++;
+                    _manager.White_Agent.AddReward(-1);
+                    //move_count++;
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-move_count);
-                    move_count++;
+                    _manager.White_Agent.AddReward(-1);
+                    //move_count++;
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-move_count);
-                    move_count++;
+                    _manager.White_Agent.AddReward(-1);
+                    //move_count++;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-move_count);
-                    move_count++;
+                    _manager.White_Agent.AddReward(-1);
+                    //move_count++;
                     break;
                 case "ok":
                     if (!_canLocate)
@@ -118,7 +118,7 @@ namespace SinglePlay2.State
 
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(1f);
+                    _manager.White_Agent.AddReward(3f);
                     // 다음 차례
                     _manager.ChangeState(new BlackState(_manager));
                     break;
@@ -253,13 +253,14 @@ namespace SinglePlay2.State
                     {
                         stone = _manager.InstantiateObject(_whiteStoneNew,
                             new Vector3((i - 9) * 0.5f+_manager.center.position.x, (j - 9) * 0.5f+_manager.center.position.y, 0), Quaternion.identity);
+                        //_manager.White_Agent.AddReward(1f);
                     }
                     // 뭔가 놓여있을 때
                     else
                     {
                         stone = _manager.InstantiateObject(_whiteStoneError,
                             new Vector3((i - 9) * 0.5f+_manager.center.position.x, (j - 9) * 0.5f+_manager.center.position.y, 0), Quaternion.identity);
-                        _manager.Black_Agent.AddReward(-1f);
+                        _manager.White_Agent.AddReward(-1f);
                         _canLocate = false;
                     }
 
