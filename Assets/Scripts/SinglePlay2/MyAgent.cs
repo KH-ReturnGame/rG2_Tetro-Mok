@@ -18,7 +18,7 @@ namespace SinglePlay2
         public GameManager _manager;
         public AgentStatus status;
 
-        
+        private bool hb = false;
         public override void Initialize()
         {
             status = AgentStatus.Ready;
@@ -87,6 +87,7 @@ namespace SinglePlay2
             // DiscreteActions[0] 하나만 사용하는 설정이라고 가정
             var discreteActionsOut = actionsOut.DiscreteActions;
 
+            hb = false;
             // ↑ ↓ ← → 방향키
             if      (Input.GetKey(KeyCode.W))    discreteActionsOut[0] = 0;
             else if (Input.GetKey(KeyCode.S))  discreteActionsOut[0] = 1;
@@ -95,7 +96,7 @@ namespace SinglePlay2
             // 회전
             else if (Input.GetKey(KeyCode.R))          discreteActionsOut[0] = 4;
             // 확인(“ok”)
-            else if (Input.GetKeyDown(KeyCode.Return))     discreteActionsOut[0] = 5;
+            else if (Input.GetKey(KeyCode.Return))     discreteActionsOut[0] = 5;
             
             // Debug.Log(discreteActionsOut[0]);
         }

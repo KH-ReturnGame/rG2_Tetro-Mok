@@ -45,6 +45,7 @@ namespace SinglePlay2.State
             if (_manager.count >= _manager.max_count)
             {
                 _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
+                if(_manager.max_count <= 50) _manager.max_count += 0.5;
                 return;
             }
         }
