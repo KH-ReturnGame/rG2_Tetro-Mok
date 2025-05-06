@@ -253,6 +253,7 @@ namespace SinglePlay2.State
                     {
                         stone = _manager.InstantiateObject(_whiteStoneError,
                             new Vector3((i - 9) * 0.5f+_manager.center.position.x, (j - 9) * 0.5f+_manager.center.position.y, 0), Quaternion.identity);
+                        _manager.Black_Agent.AddReward(-1f);
                         _canLocate = false;
                     }
 

@@ -377,11 +377,11 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(xLength);
+                            Black_Agent.AddReward(xLength*2);
                         }
                         else
                         {
-                            White_Agent.AddReward(xLength);
+                            White_Agent.AddReward(xLength*2);
                         }
                     }
                     
@@ -454,11 +454,11 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(yLength);
+                            Black_Agent.AddReward(yLength*2);
                         }
                         else
                         {
-                            White_Agent.AddReward(yLength);
+                            White_Agent.AddReward(yLength*2);
                         }
                     }
                     
@@ -533,11 +533,11 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(diagLength);
+                            Black_Agent.AddReward(diagLength*2);
                         }
                         else
                         {
-                            White_Agent.AddReward(diagLength);
+                            White_Agent.AddReward(diagLength*2);
                         }
                     }
                     
@@ -612,11 +612,11 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(diagLength);
+                            Black_Agent.AddReward(diagLength*2);
                         }
                         else
                         {
-                            White_Agent.AddReward(diagLength);
+                            White_Agent.AddReward(diagLength*2);
                         }
                     }
                     
