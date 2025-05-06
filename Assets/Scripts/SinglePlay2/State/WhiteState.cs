@@ -195,6 +195,14 @@ namespace SinglePlay2.State
             for (var i = 0; i < width; i++)
             for (var j = 0; j < height; j++)
                 shape[i, j] = _currentStones[minX + i, minY + j];
+            
+            _manager.CurrentShape = shape;
+            _manager.ShapeWidth = width;
+            _manager.ShapeHeight = height;
+            _manager.minX = minX;
+            _manager.maxX = maxX;
+            _manager.minY = minY;
+            _manager.maxY = maxY;
 
             // 보드 초기화
             _currentStones = new int[19, 19];

@@ -189,6 +189,14 @@ namespace SinglePlay2.State
 
             // 보드 초기화
             _currentStones = new int[19, 19];
+            
+            _manager.CurrentShape = shape;
+            _manager.ShapeWidth = width;
+            _manager.ShapeHeight = height;
+            _manager.minX = minX;
+            _manager.maxX = maxX;
+            _manager.minY = minY;
+            _manager.maxY = maxY;
 
             // 회전하는 경우
             if (_direction == MoveDirection.Rotate)
