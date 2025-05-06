@@ -625,7 +625,7 @@ namespace SinglePlay2
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
             }
-
+            
             if (stoneType == 1)
                 UpdateScores(deletedLines * 10, 0);
             else
@@ -645,6 +645,285 @@ namespace SinglePlay2
 
                 GameBoard[i, j] = 0;
                 Destroy(GameObject.Find(i + "_" + j));
+            }
+
+            stoneType = (stoneType == 1) ? 2 : 1;
+            // 가로 탐색
+            checkedY = new List<int>();
+            foreach (var (i, j) in getCurrentStones)
+            {
+                if (checkedY.Contains(j)) continue;
+                checkedY.Add(j);
+                int xLength = 1, currentX = i;
+                while (true)
+                {
+                    if (currentX == 0) break;
+                    if (GameBoard[--currentX, j] == stoneType || GameBoard[currentX, j] == 3)
+                    {
+                        xLength++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                currentX = i;
+                while (true)
+                {
+                    if (currentX == 18) break;
+                    if (GameBoard[++currentX, j] == stoneType || GameBoard[currentX, j] == 3)
+                    {
+                        xLength++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if (xLength >= 4)
+                {
+                    if (BlackAI && WhiteAI)
+                    {
+                        if (stoneType == 2)
+                        {
+                            Black_Agent.AddReward(xLength);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(xLength);
+                        }
+                    }
+                }
+
+                if (xLength >= 10)
+                {
+                    Debug.Log("Complete Line!");
+
+                    if (BlackAI && WhiteAI)
+                    {
+                        if (stoneType == 2)
+                        {
+                            Black_Agent.AddReward(xLength*2);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(xLength*2);
+                        }
+                    }
+                }
+            }
+            
+            // 세로 탐색
+            checkedX = new List<int>();
+            foreach (var (i, j) in getCurrentStones)
+            {
+                if (checkedX.Contains(i)) continue;
+                checkedX.Add(i);
+
+                int yLength = 1, currentY = j;
+
+                while (true)
+                {
+                    if (currentY == 0) break;
+                    if (GameBoard[i, --currentY] == stoneType || GameBoard[i, currentY] == 3)
+                    {
+                        yLength++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                currentY = j;
+                while (true)
+                {
+                    if (currentY == 18) break;
+                    if (GameBoard[i, ++currentY] == stoneType || GameBoard[i, currentY] == 3)
+                    {
+                        yLength++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (yLength >= 4)
+                {
+                    if (BlackAI && WhiteAI)
+                    {
+                        if (stoneType == 2)
+                        {
+                            Black_Agent.AddReward(yLength);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(yLength);
+                        }
+                    }
+                }
+
+                if (yLength >= 10)
+                {
+                    Debug.Log("Complete Line!");
+                    
+                    if (BlackAI && WhiteAI)
+                    {
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(yLength*2);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(yLength*2);
+                        }
+                    }
+                }
+            }
+
+            // x - y = constant 대각선 탐색
+            checkedXmY = new List<int>();
+            foreach (var (i, j) in getCurrentStones)
+            {
+                if (checkedXmY.Contains(i - j)) continue;
+                checkedXmY.Add(i - j);
+
+                int diagLength = 1, currentX = i, currentY = j;
+
+                while (true)
+                {
+                    if (currentX == 0 || currentY == 0) break;
+                    if (GameBoard[--currentX, --currentY] == stoneType ||
+                        GameBoard[currentX, currentY] == 3)
+                    {
+                        diagLength++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                currentX = i;
+                currentY = j;
+                while (true)
+                {
+                    if (currentX == 18 || currentY == 18) break;
+                    if (GameBoard[++currentX, ++currentY] == stoneType ||
+                        GameBoard[currentX, currentY] == 3)
+                    {
+                        diagLength++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                
+                if (diagLength >= 4)
+                {
+                    if (BlackAI && WhiteAI)
+                    {
+                        if (stoneType == 2)
+                        {
+                            Black_Agent.AddReward(diagLength);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(diagLength);
+                        }
+                    }
+                }
+
+                if (diagLength >= 10)
+                {
+                    Debug.Log("Complete Line!");
+                    
+                    if (BlackAI && WhiteAI)
+                    {
+                        if (stoneType == 2)
+                        {
+                            Black_Agent.AddReward(diagLength*2);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(diagLength*2);
+                        }
+                    }
+                }
+            }
+
+            // x + y = constant 대각선 탐색
+            checkedXpY = new List<int>();
+            foreach (var (i, j) in getCurrentStones)
+            {
+                if (checkedXpY.Contains(i + j)) continue;
+                checkedXpY.Add(i + j);
+
+                int diagLength = 1, currentX = i, currentY = j;
+
+                while (true)
+                {
+                    if (currentX == 0 || currentY == 18) break;
+                    if (GameBoard[--currentX, ++currentY] == stoneType ||
+                        GameBoard[currentX, currentY] == 3)
+                    {
+                        diagLength++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                currentX = i;
+                currentY = j;
+                while (true)
+                {
+                    if (currentX == 18 || currentY == 0) break;
+                    if (GameBoard[++currentX, --currentY] == stoneType ||
+                        GameBoard[currentX, currentY] == 3)
+                    {
+                        diagLength++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                
+                if (diagLength >= 4)
+                {
+                    if (BlackAI && WhiteAI)
+                    {
+                        if (stoneType == 2)
+                        {
+                            Black_Agent.AddReward(diagLength);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(diagLength);
+                        }
+                    }
+                }
+
+                if (diagLength >= 10)
+                {
+                    Debug.Log("Complete Line!");
+                    
+                    if (BlackAI && WhiteAI)
+                    {
+                        if (stoneType == 2)
+                        {
+                            Black_Agent.AddReward(diagLength*2);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(diagLength*2);
+                        }
+                    }
+                }
             }
         }
 
