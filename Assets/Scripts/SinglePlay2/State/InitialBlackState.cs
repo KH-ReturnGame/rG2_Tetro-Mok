@@ -36,17 +36,17 @@ namespace SinglePlay2.State
 
         public void OnEnter()
         {
-            if (_manager.count >= _manager.max_count)
-            {
-                _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
-                return;
-            }
             Debug.Log("Entered Initial Black State");
             _blackStoneNew = _manager.blackStoneNew;
             _blackStoneError = _manager.blackStoneError;
             _parent = _manager.currentStones;
             _direction = MoveDirection.Idle;
             InitStones();
+            if (_manager.count >= _manager.max_count)
+            {
+                _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
+                return;
+            }
         }
 
         public void OnExit()
@@ -55,6 +55,7 @@ namespace SinglePlay2.State
             if (_canLocate) _manager.PutStones(TargetStones, 1);
             Debug.Log("Exited Initial Black State");
             _manager.count++;
+            move_count = 0;
         }
 
         public void Update()

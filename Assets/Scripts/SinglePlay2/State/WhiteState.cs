@@ -34,17 +34,17 @@ namespace SinglePlay2.State
 
         public void OnEnter()
         {
-            if (_manager.count >= _manager.max_count)
-            {
-                _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
-                return;
-            }
             Debug.Log("Entered White State");
             _whiteStoneNew = _manager.whiteStoneNew;
             _whiteStoneError = _manager.whiteStoneError;
             _parent = _manager.currentStones;
             _direction = MoveDirection.Idle;
             InitStones();
+            if (_manager.count >= _manager.max_count)
+            {
+                _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
+                return;
+            }
         }
 
         public void OnExit()
@@ -53,6 +53,7 @@ namespace SinglePlay2.State
             if (_canLocate) _manager.PutStones(TargetStones, 2);
             Debug.Log("Exited White State");
             _manager.count++;
+            move_count = 0;
         }
 
         public void Update()
