@@ -63,6 +63,7 @@ namespace SinglePlay2
             {
                 case 0:
                     status = AgentStatus.ReadyToChoose;
+                    AddReward(-20f);
                     break;
                 case 1:
                     _manager._currentState.HandleInput("up");
