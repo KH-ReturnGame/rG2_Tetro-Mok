@@ -61,7 +61,7 @@ namespace SinglePlay2
         public int count = 0;
         
         [HideInInspector]
-        public double max_count = 5;
+        public double max_count = 40;
         public bool BlackAI = false;
         public bool WhiteAI = false;
         public MyAgent Black_Agent;

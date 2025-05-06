@@ -45,7 +45,7 @@ namespace SinglePlay2.State
             if (_manager.count >= _manager.max_count)
             {
                 _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
-                if(_manager.max_count <= 50) _manager.max_count += 0.5;
+                //if(_manager.max_count <= 50) _manager.max_count += 0.5;
                 return;
             }
         }
@@ -76,31 +76,31 @@ namespace SinglePlay2.State
                 case "up":
                     _direction = MoveDirection.Up;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    //_manager.Black_Agent.AddReward(-1);
+                    _manager.Black_Agent.AddReward(-0.3f);
                     //move_count++;
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    //_manager.Black_Agent.AddReward(-1);
+                    _manager.Black_Agent.AddReward(-0.3f);
                     //move_count++;
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    //_manager.Black_Agent.AddReward(-1);
+                    _manager.Black_Agent.AddReward(-0.3f);
                     //move_count++;
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    //_manager.Black_Agent.AddReward(-1);
+                    _manager.Black_Agent.AddReward(-0.3f);
                     //move_count++;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    //_manager.Black_Agent.AddReward(-1);
+                    _manager.Black_Agent.AddReward(-0.3f);
                     //move_count++;
                     break;
                 case "ok":
