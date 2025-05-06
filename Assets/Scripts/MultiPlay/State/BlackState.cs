@@ -204,7 +204,10 @@ namespace MultiPlay.State
             foreach (Transform stone in _parent.transform) _manager.DestroyObject(stone.gameObject);
 
             _canLocate = true; // 초기화
+<<<<<<< HEAD
 
+=======
+>>>>>>> cf6bed870f30853da34463b465e4656f79871897
             foreach (var (i, j) in TargetStones)
                 if (_currentStones[i, j] == 1)
                 {
