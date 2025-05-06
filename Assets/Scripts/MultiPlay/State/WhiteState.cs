@@ -52,7 +52,7 @@ namespace MultiPlay.State
         {
             if (_direction != MoveDirection.Idle)
             {
-                Debug.Log("Move Stones; Direction: " + _direction);
+                // Debug.Log("Move Stones; Direction: " + _direction);
                 MoveStones();
                 _direction = MoveDirection.Idle;
             }

@@ -39,10 +39,11 @@ namespace SinglePlay
 
         public TextMeshProUGUI whiteScoreText;
         public TextMeshProUGUI resultText;
-        public float holdThreshold = 0.7f;
-        public float interval = 0.05f;
+        [SerializeField] private float holdThreshold, interval;
+        [SerializeField] private int maxTurns;
 
         private IState _currentState;
+        private int _currentTurns;
 
         private bool _isPaused, _isGameEnded;
 
@@ -137,11 +138,34 @@ namespace SinglePlay
             whiteScoreText.text = "백: " + WhiteScore;
         }
 
+        /// <summary>
+        ///     전체 착수 횟수를 업데이트
+        /// </summary>
+        /// <returns>
+        ///     게임 종료 여부를 반환
+        ///     <list>
+        ///         <item>false: 계속</item><item>true: 게임 종료</item>
+        ///     </list>
+        /// </returns>
+        private bool IncreaseTurns()
+        {
+            if (++_currentTurns > maxTurns) return true;
+            return false;
+        }
+
         public void ChangeState(IState newState)
         {
-            _currentState.OnExit();
-            _currentState = newState;
-            _currentState.OnEnter();
+            if (IncreaseTurns())
+            {
+                PauseResume();
+                EndGame();
+            }
+            else
+            {
+                _currentState.OnExit();
+                _currentState = newState;
+                _currentState.OnEnter();
+            }
         }
 
         public void SendResumeSignal()
@@ -196,8 +220,8 @@ namespace SinglePlay
         ///     돌을 배치 및 렌더링하고, 연결 상태를 확인한다.
         /// </summary>
         /// <param name="stonesToPut">배치할 돌의 좌표</param>
-        /// <param name="stoneType">돌 종류 [흑/백]</param>
-        public void PutStones((int, int)[] stonesToPut, int stoneType)
+        /// <param name="player">돌 종류 [흑/백]</param>
+        public void PutStones((int, int)[] stonesToPut, int player)
         {
             // 돌 배치 및 렌더링
             foreach (var (i, j) in stonesToPut)
@@ -209,7 +233,7 @@ namespace SinglePlay
                     stone = Instantiate(bonusStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0),
                         Quaternion.identity);
                 }
-                else if (stoneType == 1)
+                else if (player == 1)
                 {
                     GameBoard[i, j] = 1;
                     stone = Instantiate(blackStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0),
@@ -227,7 +251,7 @@ namespace SinglePlay
             }
 
             SoundManager.PlaySound(""); // TODO: Put Stone Sound
-            CheckConnections(stonesToPut, stoneType);
+            CheckConnections(stonesToPut, player);
         }
 
         /// <summary>

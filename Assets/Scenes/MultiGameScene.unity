@@ -1497,6 +1497,7 @@ MonoBehaviour:
   resultText: {fileID: 674389352}
   holdThreshold: 0.7
   interval: 0.05
+  maxTurns: 30
 --- !u!1 &976485959
 GameObject:
   m_ObjectHideFlags: 0
