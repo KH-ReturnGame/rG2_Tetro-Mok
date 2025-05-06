@@ -203,10 +203,10 @@ namespace MultiPlay.State
             // 기존 돌 삭제
             foreach (Transform stone in _parent.transform) _manager.DestroyObject(stone.gameObject);
 
+            _canLocate = true; // 초기화
             foreach (var (i, j) in TargetStones)
                 if (_currentStones[i, j] == 1)
                 {
-                    _canLocate = true; // 초기화
                     GameObject stone;
 
                     // 기존에 놓인 돌이 없을 때
