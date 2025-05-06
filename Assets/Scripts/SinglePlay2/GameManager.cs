@@ -58,6 +58,9 @@ namespace SinglePlay2
         public int WhiteScore { get; private set; }
 
         [Space(10)] [Header("ML-Agents")] [SerializeField]
+        public int count = 0;
+
+        public int max_count = 15;
         public bool BlackAI = false;
         public bool WhiteAI = false;
         public MyAgent Black_Agent;
@@ -82,6 +85,7 @@ namespace SinglePlay2
         
         public void Restart()
         {
+            count = 0;
             BlackScore = WhiteScore = 0;
             blackScoreText.text = "흑: 0";
             whiteScoreText.text = "백: 0";

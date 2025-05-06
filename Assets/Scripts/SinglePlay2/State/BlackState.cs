@@ -33,6 +33,11 @@ namespace SinglePlay2.State
 
         public void OnEnter()
         {
+            if (_manager.count == _manager.max_count)
+            {
+                _manager.Black_Agent.EndEpisode();
+                _manager.White_Agent.EndEpisode();
+            }
             Debug.Log("Entered Black State");
             _blackStoneNew = _manager.blackStoneNew;
             _blackStoneError = _manager.blackStoneError;
@@ -47,6 +52,7 @@ namespace SinglePlay2.State
             if (_canLocate) _manager.PutStones(TargetStones, 1);
             Debug.Log("Exited Black State");
             //_manager.Restart();
+            _manager.count++;
         }
 
         public void Update()
@@ -66,22 +72,27 @@ namespace SinglePlay2.State
                 case "up":
                     _direction = MoveDirection.Up;
                     _manager.Black_Agent.status = AgentStatus.Working;
+                    _manager.Black_Agent.AddReward(-0.5f);
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
                     _manager.Black_Agent.status = AgentStatus.Working;
+                    _manager.Black_Agent.AddReward(-0.5f);
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
                     _manager.Black_Agent.status = AgentStatus.Working;
+                    _manager.Black_Agent.AddReward(-0.5f);
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
                     _manager.Black_Agent.status = AgentStatus.Working;
+                    _manager.Black_Agent.AddReward(-0.5f);
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
                     _manager.Black_Agent.status = AgentStatus.Working;
+                    _manager.Black_Agent.AddReward(-0.5f);
                     break;
                 case "ok":
                     if (!_canLocate)
