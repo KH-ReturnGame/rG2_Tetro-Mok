@@ -5,6 +5,7 @@ using System.Linq;
 using Global;
 using SinglePlay2.State;
 using TMPro;
+using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -37,6 +38,7 @@ namespace SinglePlay2
         public GameObject gameEndScreen;
         public GameObject currentStones;
         public GameObject prevStones;
+        public Transform center;
 
         [Space(10)] [Header("TMPs")] [SerializeField]
         public TextMeshProUGUI blackScoreText;
@@ -80,8 +82,25 @@ namespace SinglePlay2
         
         public void Restart()
         {
-            BlackScore = 0;
-            WhiteScore = 0;
+            BlackScore = WhiteScore = 0;
+            blackScoreText.text = "흑: 0";
+            whiteScoreText.text = "백: 0";
+            
+            // Debug.Log("black, white -> working");
+            Black_Agent.status = AgentStatus.Working;
+            White_Agent.status = AgentStatus.Working;
+            AgentWorking = true;
+            
+            for (int i = prevStones.transform.childCount - 1; i >= 0; i--)
+            {
+                GameObject child = prevStones.transform.GetChild(i).gameObject;
+                Destroy(child);
+            }
+            for (int i = currentStones.transform.childCount - 1; i >= 0; i--)
+            {
+                GameObject child = currentStones.transform.GetChild(i).gameObject;
+                Destroy(child);
+            }
             
             _currentState = new GameStartState(this);
             _currentState.OnEnter();
@@ -92,27 +111,58 @@ namespace SinglePlay2
             // 둘 다 사람
             if (!BlackAI && !WhiteAI)
             {
-                
+                if (Input.anyKeyDown)
+                {
+                    if (!_isPaused)
+                    {
+                        if (Input.GetKeyDown(KeyCode.Return)) _currentState.HandleInput("ok");
+                        if (Input.GetKeyDown(KeyCode.R)) _currentState.HandleInput("rotate");
+                        if (Input.GetKeyDown(KeyCode.UpArrow))
+                            StartCoroutine(CheckHoldTime(KeyCode.UpArrow, "up"));
+
+                        if (Input.GetKeyDown(KeyCode.DownArrow))
+                            StartCoroutine(CheckHoldTime(KeyCode.DownArrow, "down"));
+
+                        if (Input.GetKeyDown(KeyCode.LeftArrow))
+                            StartCoroutine(CheckHoldTime(KeyCode.LeftArrow, "left"));
+
+                        if (Input.GetKeyDown(KeyCode.RightArrow))
+                            StartCoroutine(CheckHoldTime(KeyCode.RightArrow, "right"));
+                        if (Input.GetKeyDown(KeyCode.W))
+                            StartCoroutine(CheckHoldTime(KeyCode.W, "w"));
+
+                        if (Input.GetKeyDown(KeyCode.A))
+                            StartCoroutine(CheckHoldTime(KeyCode.A, "a"));
+
+                        if (Input.GetKeyDown(KeyCode.S))
+                            StartCoroutine(CheckHoldTime(KeyCode.S, "s"));
+
+                        if (Input.GetKeyDown(KeyCode.D))
+                            StartCoroutine(CheckHoldTime(KeyCode.D, "d"));
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Escape) && !_isGameEnded)
+                    {
+                        _currentState.HandleInput("escape");
+                        PauseResume();
+                    }
+                }
             }
             // 둘 다 봇
             else if (BlackAI && WhiteAI)
             {
                 if (Black_Agent.status == AgentStatus.Ready && White_Agent.status == AgentStatus.Ready)
                 {
-                    Debug.Log("black, white -> working");
-                    Black_Agent.status = AgentStatus.Working;
-                    White_Agent.status = AgentStatus.Working;
-                    AgentWorking = true;
                     Restart();
                 }
                 else if (Black_Agent.status == AgentStatus.ReadyToChoose)
                 {
-                    Debug.Log("검정 고르자");
+                    // Debug.Log("검정 고르자");
                     Black_Agent.RequestDecision();
                 }
                 else if (White_Agent.status == AgentStatus.ReadyToChoose)
                 {
-                    Debug.Log("하양 고르자");
+                    // Debug.Log("하양 고르자");
                     White_Agent.RequestDecision();
                 }
             }
@@ -121,42 +171,6 @@ namespace SinglePlay2
             {
                 
             }
-            
-            
-            /*if (Input.anyKeyDown)
-            {
-                if (!_isPaused)
-                {
-                    if (Input.GetKeyDown(KeyCode.Return)) _currentState.HandleInput("ok");
-                    if (Input.GetKeyDown(KeyCode.R)) _currentState.HandleInput("rotate");
-                    if (Input.GetKeyDown(KeyCode.UpArrow))
-                        StartCoroutine(CheckHoldTime(KeyCode.UpArrow, "up"));
-
-                    if (Input.GetKeyDown(KeyCode.DownArrow))
-                        StartCoroutine(CheckHoldTime(KeyCode.DownArrow, "down"));
-
-                    if (Input.GetKeyDown(KeyCode.LeftArrow))
-                        StartCoroutine(CheckHoldTime(KeyCode.LeftArrow, "left"));
-
-                    if (Input.GetKeyDown(KeyCode.RightArrow))
-                        StartCoroutine(CheckHoldTime(KeyCode.RightArrow, "right"));
-                    if (Input.GetKeyDown(KeyCode.W))
-                        StartCoroutine(CheckHoldTime(KeyCode.W, "w"));
-
-                    if (Input.GetKeyDown(KeyCode.A))
-                        StartCoroutine(CheckHoldTime(KeyCode.A, "a"));
-
-                    if (Input.GetKeyDown(KeyCode.S))
-                        StartCoroutine(CheckHoldTime(KeyCode.S, "s"));
-
-                    if (Input.GetKeyDown(KeyCode.D))
-                        StartCoroutine(CheckHoldTime(KeyCode.D, "d"));
-                }
-
-                if (Input.GetKeyDown(KeyCode.Escape) && !_isGameEnded) PauseResume();
-            }*/
-
-
             _currentState.Update();
         }
 
@@ -262,19 +276,19 @@ namespace SinglePlay2
                 if (Random.Range(0, 15) == 0)
                 {
                     GameBoard[i, j] = 3;
-                    stone = Instantiate(bonusStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0),
+                    stone = Instantiate(bonusStone, new Vector3((i - 9) * 0.5f+center.position.x, (j - 9) * 0.5f+center.position.y, 0),
                         Quaternion.identity);
                 }
                 else if (stoneType == 1)
                 {
                     GameBoard[i, j] = 1;
-                    stone = Instantiate(blackStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0),
+                    stone = Instantiate(blackStone, new Vector3((i - 9) * 0.5f+center.position.x, (j - 9) * 0.5f+center.position.y, 0),
                         Quaternion.identity);
                 }
                 else
                 {
                     GameBoard[i, j] = 2;
-                    stone = Instantiate(whiteStone, new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0),
+                    stone = Instantiate(whiteStone, new Vector3((i - 9) * 0.5f+center.position.x, (j - 9) * 0.5f+center.position.y, 0),
                         Quaternion.identity);
                 }
 
@@ -338,27 +352,33 @@ namespace SinglePlay2
                 }
                 if (xLength == 5)
                 {
-                    if (stoneType == 1)
+                    if (BlackAI && WhiteAI)
                     {
-                        Black_Agent.AddReward(2f);
-                    }
-                    else
-                    {
-                        White_Agent.AddReward(2f);
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(2f);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(2f);
+                        }
                     }
                 }
 
                 if (xLength >= 10)
                 {
                     Debug.Log("Complete Line!");
-                    
-                    if (stoneType == 1)
+
+                    if (BlackAI && WhiteAI)
                     {
-                        Black_Agent.AddReward(5f);
-                    }
-                    else
-                    {
-                        White_Agent.AddReward(5f);
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(5f);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(5f);
+                        }
                     }
                     
                     deletedLines++;
@@ -409,13 +429,16 @@ namespace SinglePlay2
 
                 if (yLength == 5)
                 {
-                    if (stoneType == 1)
+                    if (BlackAI && WhiteAI)
                     {
-                        Black_Agent.AddReward(2f);
-                    }
-                    else
-                    {
-                        White_Agent.AddReward(2f);
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(2f);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(2f);
+                        }
                     }
                 }
 
@@ -423,13 +446,16 @@ namespace SinglePlay2
                 {
                     Debug.Log("Complete Line!");
                     
-                    if (stoneType == 1)
+                    if (BlackAI && WhiteAI)
                     {
-                        Black_Agent.AddReward(5f);
-                    }
-                    else
-                    {
-                        White_Agent.AddReward(5f);
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(5f);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(5f);
+                        }
                     }
                     
                     deletedLines++;
@@ -482,13 +508,16 @@ namespace SinglePlay2
                 
                 if (diagLength == 5)
                 {
-                    if (stoneType == 1)
+                    if (BlackAI && WhiteAI)
                     {
-                        Black_Agent.AddReward(2f);
-                    }
-                    else
-                    {
-                        White_Agent.AddReward(2f);
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(2f);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(2f);
+                        }
                     }
                 }
 
@@ -496,13 +525,16 @@ namespace SinglePlay2
                 {
                     Debug.Log("Complete Line!");
                     
-                    if (stoneType == 1)
+                    if (BlackAI && WhiteAI)
                     {
-                        Black_Agent.AddReward(5f);
-                    }
-                    else
-                    {
-                        White_Agent.AddReward(5f);
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(5f);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(5f);
+                        }
                     }
                     
                     deletedLines++;
@@ -555,13 +587,16 @@ namespace SinglePlay2
                 
                 if (diagLength == 5)
                 {
-                    if (stoneType == 1)
+                    if (BlackAI && WhiteAI)
                     {
-                        Black_Agent.AddReward(2f);
-                    }
-                    else
-                    {
-                        White_Agent.AddReward(2f);
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(2f);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(2f);
+                        }
                     }
                 }
 
@@ -569,13 +604,16 @@ namespace SinglePlay2
                 {
                     Debug.Log("Complete Line!");
                     
-                    if (stoneType == 1)
+                    if (BlackAI && WhiteAI)
                     {
-                        Black_Agent.AddReward(5f);
-                    }
-                    else
-                    {
-                        White_Agent.AddReward(5f);
+                        if (stoneType == 1)
+                        {
+                            Black_Agent.AddReward(5f);
+                        }
+                        else
+                        {
+                            White_Agent.AddReward(5f);
+                        }
                     }
                     
                     deletedLines++;

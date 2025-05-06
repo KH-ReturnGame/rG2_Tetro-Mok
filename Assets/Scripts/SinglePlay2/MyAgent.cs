@@ -55,7 +55,7 @@ namespace SinglePlay2
 
         public override void OnActionReceived(ActionBuffers actions)
         {
-            Debug.Log("?? -> working");
+            // Debug.Log("?? -> working");
             status = AgentStatus.Working;
             var action = actions.DiscreteActions[0];
 
@@ -83,7 +83,7 @@ namespace SinglePlay2
                     _manager._currentState.HandleInput("ok");
                     break;
             }
-            Debug.Log(action+"결정!");
+            // Debug.Log(action+"결정!");
         }
         public override void Heuristic(in ActionBuffers actionsOut)
         {
@@ -100,7 +100,7 @@ namespace SinglePlay2
             // 확인(“ok”)
             else if (Input.GetKeyDown(KeyCode.Return))     discreteActionsOut[0] = 6;
             
-            Debug.Log(discreteActionsOut[0]);
+            // Debug.Log(discreteActionsOut[0]);
         }
     }
 }

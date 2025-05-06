@@ -46,6 +46,7 @@ namespace SinglePlay2.State
             foreach (Transform stone in _parent.transform) _manager.DestroyObject(stone.gameObject);
             if (_canLocate) _manager.PutStones(TargetStones, 1);
             Debug.Log("Exited Black State");
+            //_manager.Restart();
         }
 
         public void Update()
@@ -214,23 +215,23 @@ namespace SinglePlay2.State
             // 기존 돌 삭제
             foreach (Transform stone in _parent.transform) _manager.DestroyObject(stone.gameObject);
 
+            _canLocate = true; // 초기화
             foreach (var (i, j) in TargetStones)
                 if (_currentStones[i, j] == 1)
                 {
-                    _canLocate = true; // 초기화
                     GameObject stone;
 
                     // 기존에 놓인 돌이 없을 때
                     if (_manager.GameBoard[i, j] == 0)
                     {
                         stone = _manager.InstantiateObject(_blackStoneNew,
-                            new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
+                            new Vector3((i - 9) * 0.5f+_manager.center.position.x, (j - 9) * 0.5f+_manager.center.position.y, 0), Quaternion.identity);
                     }
                     // 뭔가 놓여있을 때
                     else
                     {
                         stone = _manager.InstantiateObject(_blackStoneError,
-                            new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
+                            new Vector3((i - 9) * 0.5f+_manager.center.position.x, (j - 9) * 0.5f+_manager.center.position.y, 0), Quaternion.identity);
                         _canLocate = false;
                     }
 

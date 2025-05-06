@@ -217,13 +217,13 @@ namespace SinglePlay2.State
                     if (_manager.GameBoard[i, j] == 0)
                     {
                         stone = _manager.InstantiateObject(_blackStoneNew,
-                            new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
+                            new Vector3((i - 9) * 0.5f+_manager.center.position.x, (j - 9) * 0.5f+_manager.center.position.y, 0), Quaternion.identity);
                     }
                     // 뭔가 놓여있을 때
                     else
                     {
                         stone = _manager.InstantiateObject(_blackStoneError,
-                            new Vector3((i - 9) * 0.5f, (j - 9) * 0.5f, 0), Quaternion.identity);
+                            new Vector3((i - 9) * 0.5f+_manager.center.position.x, (j - 9) * 0.5f+_manager.center.position.y, 0), Quaternion.identity);
                         _canLocate = false;
                     }
 

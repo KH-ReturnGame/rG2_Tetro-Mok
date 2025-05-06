@@ -98,7 +98,7 @@ namespace Global
             }
             else
             {
-                Debug.Log("Wrong Sound Name. Please Check It Again.");
+                //Debug.Log("Wrong Sound Name. Please Check It Again.");
             }
         }
     }
