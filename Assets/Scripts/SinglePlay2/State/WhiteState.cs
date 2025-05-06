@@ -75,35 +75,35 @@ namespace SinglePlay2.State
                     _direction = MoveDirection.Up;
                     //ebug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-1);
+                    //_manager.White_Agent.AddReward(-1);
                     //move_count++;
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-1);
+                    //_manager.White_Agent.AddReward(-1);
                     //move_count++;
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-1);
+                    //_manager.White_Agent.AddReward(-1);
                     //move_count++;
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-1);
+                    //_manager.White_Agent.AddReward(-1);
                     //move_count++;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-1);
+                    //_manager.White_Agent.AddReward(-1);
                     //move_count++;
                     break;
                 case "ok":
