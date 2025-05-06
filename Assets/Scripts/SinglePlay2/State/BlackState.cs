@@ -110,6 +110,7 @@ namespace SinglePlay2.State
                     }
 
                     _manager.Black_Agent.status = AgentStatus.Working;
+                    _manager.Black_Agent.AddReward(1f);
                     // 다음 차례
                     _manager.ChangeState(new WhiteState(_manager));
                     break;

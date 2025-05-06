@@ -62,25 +62,21 @@ namespace SinglePlay2
             switch (action)
             {
                 case 0:
-                    status = AgentStatus.ReadyToChoose;
-                    AddReward(-10f);
-                    break;
-                case 1:
                     _manager._currentState.HandleInput("up");
                     break;
-                case 2:
+                case 1:
                     _manager._currentState.HandleInput("down");
                     break;
-                case 3:
+                case 2:
                     _manager._currentState.HandleInput("left");
                     break;
-                case 4:
+                case 3:
                     _manager._currentState.HandleInput("right");
                     break;
-                case 5:
+                case 4:
                     _manager._currentState.HandleInput("rotate");
                     break;
-                case 6:
+                case 5:
                     _manager._currentState.HandleInput("ok");
                     break;
             }
@@ -92,14 +88,14 @@ namespace SinglePlay2
             var discreteActionsOut = actionsOut.DiscreteActions;
 
             // ↑ ↓ ← → 방향키
-            if      (Input.GetKey(KeyCode.W))    discreteActionsOut[0] = 1;
-            else if (Input.GetKey(KeyCode.S))  discreteActionsOut[0] = 2;
-            else if (Input.GetKey(KeyCode.A))  discreteActionsOut[0] = 3;
-            else if (Input.GetKey(KeyCode.D)) discreteActionsOut[0] = 4;
+            if      (Input.GetKey(KeyCode.W))    discreteActionsOut[0] = 0;
+            else if (Input.GetKey(KeyCode.S))  discreteActionsOut[0] = 1;
+            else if (Input.GetKey(KeyCode.A))  discreteActionsOut[0] = 2;
+            else if (Input.GetKey(KeyCode.D)) discreteActionsOut[0] = 3;
             // 회전
-            else if (Input.GetKey(KeyCode.R))          discreteActionsOut[0] = 5;
+            else if (Input.GetKey(KeyCode.R))          discreteActionsOut[0] = 4;
             // 확인(“ok”)
-            else if (Input.GetKeyDown(KeyCode.Return))     discreteActionsOut[0] = 6;
+            else if (Input.GetKeyDown(KeyCode.Return))     discreteActionsOut[0] = 5;
             
             // Debug.Log(discreteActionsOut[0]);
         }

@@ -60,6 +60,7 @@ namespace SinglePlay2
         [Space(10)] [Header("ML-Agents")] [SerializeField]
         public int count = 0;
         
+        [HideInInspector]
         public int max_count = 40;
         public bool BlackAI = false;
         public bool WhiteAI = false;
