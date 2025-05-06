@@ -350,17 +350,17 @@ namespace SinglePlay2
                         break;
                     }
                 }
-                if (xLength == 5)
+                if (xLength >= 4)
                 {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(2f);
+                            Black_Agent.AddReward(xLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(2f);
+                            White_Agent.AddReward(xLength);
                         }
                     }
                 }
@@ -373,11 +373,11 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(5f);
+                            Black_Agent.AddReward(xLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(5f);
+                            White_Agent.AddReward(xLength);
                         }
                     }
                     
@@ -427,17 +427,17 @@ namespace SinglePlay2
                     }
                 }
 
-                if (yLength == 5)
+                if (yLength >= 4)
                 {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(2f);
+                            Black_Agent.AddReward(yLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(2f);
+                            White_Agent.AddReward(yLength);
                         }
                     }
                 }
@@ -450,11 +450,11 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(5f);
+                            Black_Agent.AddReward(yLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(5f);
+                            White_Agent.AddReward(yLength);
                         }
                     }
                     
@@ -506,17 +506,17 @@ namespace SinglePlay2
                     }
                 }
                 
-                if (diagLength == 5)
+                if (diagLength >= 4)
                 {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(2f);
+                            Black_Agent.AddReward(diagLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(2f);
+                            White_Agent.AddReward(diagLength);
                         }
                     }
                 }
@@ -529,11 +529,11 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(5f);
+                            Black_Agent.AddReward(diagLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(5f);
+                            White_Agent.AddReward(diagLength);
                         }
                     }
                     
@@ -585,17 +585,17 @@ namespace SinglePlay2
                     }
                 }
                 
-                if (diagLength == 5)
+                if (diagLength >= 4)
                 {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(2f);
+                            Black_Agent.AddReward(diagLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(2f);
+                            White_Agent.AddReward(diagLength);
                         }
                     }
                 }
@@ -608,11 +608,11 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(5f);
+                            Black_Agent.AddReward(diagLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(5f);
+                            White_Agent.AddReward(diagLength);
                         }
                     }
                     
