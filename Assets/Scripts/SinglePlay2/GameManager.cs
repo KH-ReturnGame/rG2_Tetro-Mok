@@ -99,6 +99,7 @@ namespace SinglePlay2
             {
                 if (Black_Agent.status == AgentStatus.Ready && White_Agent.status == AgentStatus.Ready)
                 {
+                    Debug.Log("black, white -> working");
                     Black_Agent.status = AgentStatus.Working;
                     White_Agent.status = AgentStatus.Working;
                     AgentWorking = true;
@@ -106,10 +107,12 @@ namespace SinglePlay2
                 }
                 else if (Black_Agent.status == AgentStatus.ReadyToChoose)
                 {
+                    Debug.Log("검정 고르자");
                     Black_Agent.RequestDecision();
                 }
                 else if (White_Agent.status == AgentStatus.ReadyToChoose)
                 {
+                    Debug.Log("하양 고르자");
                     White_Agent.RequestDecision();
                 }
             }

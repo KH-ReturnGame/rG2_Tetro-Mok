@@ -55,30 +55,35 @@ namespace SinglePlay2
 
         public override void OnActionReceived(ActionBuffers actions)
         {
+            Debug.Log("?? -> working");
             status = AgentStatus.Working;
             var action = actions.DiscreteActions[0];
 
             switch (action)
             {
                 case 0:
-                    _manager._currentState.HandleInput("up");
+                    status = AgentStatus.ReadyToChoose;
                     break;
                 case 1:
-                    _manager._currentState.HandleInput("down");
+                    _manager._currentState.HandleInput("up");
                     break;
                 case 2:
-                    _manager._currentState.HandleInput("left");
+                    _manager._currentState.HandleInput("down");
                     break;
                 case 3:
-                    _manager._currentState.HandleInput("right");
+                    _manager._currentState.HandleInput("left");
                     break;
                 case 4:
-                    _manager._currentState.HandleInput("rotate");
+                    _manager._currentState.HandleInput("right");
                     break;
                 case 5:
+                    _manager._currentState.HandleInput("rotate");
+                    break;
+                case 6:
                     _manager._currentState.HandleInput("ok");
                     break;
             }
+            Debug.Log(action+"결정!");
         }
         public override void Heuristic(in ActionBuffers actionsOut)
         {
@@ -86,14 +91,16 @@ namespace SinglePlay2
             var discreteActionsOut = actionsOut.DiscreteActions;
 
             // ↑ ↓ ← → 방향키
-            if      (Input.GetKeyDown(KeyCode.UpArrow))    discreteActionsOut[0] = 0;
-            else if (Input.GetKeyDown(KeyCode.DownArrow))  discreteActionsOut[0] = 1;
-            else if (Input.GetKeyDown(KeyCode.LeftArrow))  discreteActionsOut[0] = 2;
-            else if (Input.GetKeyDown(KeyCode.RightArrow)) discreteActionsOut[0] = 3;
+            if      (Input.GetKey(KeyCode.W))    discreteActionsOut[0] = 1;
+            else if (Input.GetKey(KeyCode.S))  discreteActionsOut[0] = 2;
+            else if (Input.GetKey(KeyCode.A))  discreteActionsOut[0] = 3;
+            else if (Input.GetKey(KeyCode.D)) discreteActionsOut[0] = 4;
             // 회전
-            else if (Input.GetKeyDown(KeyCode.R))          discreteActionsOut[0] = 4;
+            else if (Input.GetKey(KeyCode.R))          discreteActionsOut[0] = 5;
             // 확인(“ok”)
-            else if (Input.GetKeyDown(KeyCode.Return))     discreteActionsOut[0] = 5;
+            else if (Input.GetKeyDown(KeyCode.Return))     discreteActionsOut[0] = 6;
+            
+            Debug.Log(discreteActionsOut[0]);
         }
     }
 }

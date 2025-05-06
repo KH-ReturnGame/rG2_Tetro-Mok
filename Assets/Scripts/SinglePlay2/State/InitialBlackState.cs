@@ -65,18 +65,23 @@ namespace SinglePlay2.State
             {
                 case "up":
                     _direction = MoveDirection.Up;
+                    _manager.Black_Agent.status = AgentStatus.Working;
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
+                    _manager.Black_Agent.status = AgentStatus.Working;
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
+                    _manager.Black_Agent.status = AgentStatus.Working;
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
+                    _manager.Black_Agent.status = AgentStatus.Working;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
+                    _manager.Black_Agent.status = AgentStatus.Working;
                     break;
                 case "ok":
                     if (!_canLocate)
@@ -87,6 +92,7 @@ namespace SinglePlay2.State
                         break;
                     }
 
+                    _manager.Black_Agent.status = AgentStatus.Working;
                     // 다음 차례
                     _manager.ChangeState(new WhiteState(_manager));
                     break;

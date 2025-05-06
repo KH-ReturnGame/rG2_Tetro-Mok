@@ -60,32 +60,46 @@ namespace SinglePlay2.State
 
         public void HandleInput(string input)
         {
+            Debug.Log("핸들 인풋");
             switch (input)
             {
-                case "w":
+                case "up":
                     _direction = MoveDirection.Up;
+                    Debug.Log("white -> working");
+                    _manager.White_Agent.status = AgentStatus.Working;
                     break;
-                case "s":
+                case "down":
                     _direction = MoveDirection.Down;
+                    Debug.Log("white -> working");
+                    _manager.White_Agent.status = AgentStatus.Working;
                     break;
-                case "a":
+                case "left":
                     _direction = MoveDirection.Left;
+                    Debug.Log("white -> working");
+                    _manager.White_Agent.status = AgentStatus.Working;
                     break;
-                case "d":
+                case "right":
                     _direction = MoveDirection.Right;
+                    Debug.Log("white -> working");
+                    _manager.White_Agent.status = AgentStatus.Working;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
+                    Debug.Log("white -> working");
+                    _manager.White_Agent.status = AgentStatus.Working;
                     break;
                 case "ok":
                     if (!_canLocate)
                     {
                         _manager.White_Agent.AddReward(-1f);
+                        Debug.Log("white -> rtc");
                         _manager.White_Agent.status = AgentStatus.ReadyToChoose;
                         Debug.Log("Can't put stone on others");
                         break;
                     }
 
+                    Debug.Log("white -> working");
+                    _manager.White_Agent.status = AgentStatus.Working;
                     // 다음 차례
                     _manager.ChangeState(new BlackState(_manager));
                     break;
@@ -134,6 +148,7 @@ namespace SinglePlay2.State
             
             _manager.CheckEndGame(_currentStones);
             RenderStones();
+            Debug.Log("white -> rtc");
             _manager.White_Agent.status = AgentStatus.ReadyToChoose;
         }
 
@@ -230,6 +245,7 @@ namespace SinglePlay2.State
 
                     stone.transform.SetParent(_parent.transform);
                 }
+            Debug.Log("white -> rtc");
             _manager.White_Agent.status = AgentStatus.ReadyToChoose;
         }
     }
