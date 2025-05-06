@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace SinglePlay2.State
@@ -34,10 +35,12 @@ namespace SinglePlay2.State
 
         public void OnEnter()
         {
-            if (_manager.count == _manager.max_count)
+            if (_manager.count >= _manager.max_count)
             {
                 _manager.Black_Agent.EndEpisode();
                 _manager.White_Agent.EndEpisode();
+                _manager.Restart();
+                return;
             }
             Debug.Log("Entered Initial Black State");
             _blackStoneNew = _manager.blackStoneNew;

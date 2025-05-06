@@ -395,6 +395,7 @@ namespace SinglePlay2.State
                 }
                 _manager.Black_Agent.EndEpisode();
                 _manager.White_Agent.EndEpisode();
+                _manager.Restart();
             }
             else
             {
