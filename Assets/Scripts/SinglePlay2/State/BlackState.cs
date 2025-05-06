@@ -9,6 +9,7 @@ namespace SinglePlay2.State
         private int[,] _currentStones;
         private MoveDirection _direction;
         private GameObject _parent, _blackStoneNew, _blackStoneError;
+        private int move_count = 0;
 
         public BlackState(GameManager manager)
         {
@@ -35,9 +36,7 @@ namespace SinglePlay2.State
         {
             if (_manager.count >= _manager.max_count)
             {
-                _manager.Black_Agent.EndEpisode();
-                _manager.White_Agent.EndEpisode();
-                _manager.Restart();
+                _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
                 return;
             }
             Debug.Log("Entered Black State");
@@ -74,27 +73,32 @@ namespace SinglePlay2.State
                 case "up":
                     _direction = MoveDirection.Up;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.5f);
+                    _manager.Black_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.5f);
+                    _manager.Black_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.5f);
+                    _manager.Black_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.5f);
+                    _manager.Black_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.5f);
+                    _manager.Black_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "ok":
                     if (!_canLocate)

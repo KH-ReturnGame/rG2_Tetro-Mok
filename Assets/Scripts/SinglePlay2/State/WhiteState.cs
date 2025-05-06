@@ -9,6 +9,7 @@ namespace SinglePlay2.State
         private int[,] _currentStones;
         private MoveDirection _direction;
         private GameObject _parent, _whiteStoneNew, _whiteStoneError;
+        private int move_count = 0;
 
         public WhiteState(GameManager manager)
         {
@@ -35,9 +36,7 @@ namespace SinglePlay2.State
         {
             if (_manager.count >= _manager.max_count)
             {
-                _manager.Black_Agent.EndEpisode();
-                _manager.White_Agent.EndEpisode();
-                _manager.Restart();
+                _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
                 return;
             }
             Debug.Log("Entered White State");
@@ -75,31 +74,36 @@ namespace SinglePlay2.State
                     _direction = MoveDirection.Up;
                     //ebug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.5f);
+                    _manager.White_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.5f);
+                    _manager.White_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.5f);
+                    _manager.White_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.5f);
+                    _manager.White_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.5f);
+                    _manager.White_Agent.AddReward(-move_count);
+                    move_count++;
                     break;
                 case "ok":
                     if (!_canLocate)
