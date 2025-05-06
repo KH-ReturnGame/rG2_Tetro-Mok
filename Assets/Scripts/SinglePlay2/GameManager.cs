@@ -59,9 +59,8 @@ namespace SinglePlay2
 
         [Space(10)] [Header("ML-Agents")] [SerializeField]
         public int count = 0;
-
-        [HideInInspector]
-        public int max_count = 25;
+        
+        public int max_count_ = 25;
         public bool BlackAI = false;
         public bool WhiteAI = false;
         public MyAgent Black_Agent;

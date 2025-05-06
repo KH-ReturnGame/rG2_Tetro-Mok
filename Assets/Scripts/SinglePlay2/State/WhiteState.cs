@@ -33,7 +33,7 @@ namespace SinglePlay2.State
 
         public void OnEnter()
         {
-            if (_manager.count >= _manager.max_count)
+            if (_manager.count >= _manager.max_count_)
             {
                 _manager.Black_Agent.EndEpisode();
                 _manager.White_Agent.EndEpisode();
