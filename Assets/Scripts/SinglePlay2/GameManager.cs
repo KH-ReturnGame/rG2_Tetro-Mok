@@ -61,7 +61,7 @@ namespace SinglePlay2
         public int count = 0;
         
         [HideInInspector]
-        public double max_count = 40;
+        public double max_count_ = 55;
         public bool BlackAI = false;
         public bool WhiteAI = false;
         public MyAgent Black_Agent;
@@ -680,25 +680,8 @@ namespace SinglePlay2
                         break;
                     }
                 }
-                if (xLength >= 4)
+                if (xLength >= 5)
                 {
-                    if (BlackAI && WhiteAI)
-                    {
-                        if (stoneType == 2)
-                        {
-                            Black_Agent.AddReward(xLength);
-                        }
-                        else
-                        {
-                            White_Agent.AddReward(xLength);
-                        }
-                    }
-                }
-
-                if (xLength >= 10)
-                {
-                    Debug.Log("Complete Line!");
-
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 2)
@@ -749,28 +732,11 @@ namespace SinglePlay2
                     }
                 }
 
-                if (yLength >= 4)
+                if (yLength >= 5)
                 {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 2)
-                        {
-                            Black_Agent.AddReward(yLength);
-                        }
-                        else
-                        {
-                            White_Agent.AddReward(yLength);
-                        }
-                    }
-                }
-
-                if (yLength >= 10)
-                {
-                    Debug.Log("Complete Line!");
-                    
-                    if (BlackAI && WhiteAI)
-                    {
-                        if (stoneType == 1)
                         {
                             Black_Agent.AddReward(yLength*2);
                         }
@@ -821,25 +787,8 @@ namespace SinglePlay2
                     }
                 }
                 
-                if (diagLength >= 4)
+                if (diagLength >= 5)
                 {
-                    if (BlackAI && WhiteAI)
-                    {
-                        if (stoneType == 2)
-                        {
-                            Black_Agent.AddReward(diagLength);
-                        }
-                        else
-                        {
-                            White_Agent.AddReward(diagLength);
-                        }
-                    }
-                }
-
-                if (diagLength >= 10)
-                {
-                    Debug.Log("Complete Line!");
-                    
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 2)
@@ -893,25 +842,8 @@ namespace SinglePlay2
                     }
                 }
                 
-                if (diagLength >= 4)
+                if (diagLength >= 5)
                 {
-                    if (BlackAI && WhiteAI)
-                    {
-                        if (stoneType == 2)
-                        {
-                            Black_Agent.AddReward(diagLength);
-                        }
-                        else
-                        {
-                            White_Agent.AddReward(diagLength);
-                        }
-                    }
-                }
-
-                if (diagLength >= 10)
-                {
-                    Debug.Log("Complete Line!");
-                    
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 2)

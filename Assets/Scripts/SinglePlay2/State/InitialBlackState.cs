@@ -42,7 +42,7 @@ namespace SinglePlay2.State
             _parent = _manager.currentStones;
             _direction = MoveDirection.Idle;
             InitStones();
-            if (_manager.count >= _manager.max_count)
+            if (_manager.count >= _manager.max_count_)
             {
                 _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
                 //if(_manager.max_count <= 50) _manager.max_count += 0.5;
