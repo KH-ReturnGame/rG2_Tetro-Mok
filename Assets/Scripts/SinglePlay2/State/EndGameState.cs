@@ -379,19 +379,19 @@ namespace SinglePlay2.State
                 if (_manager.BlackScore > _manager.WhiteScore)
                 {
                     Debug.Log("바둑이 승리!");
-                    _manager.Black_Agent.AddReward(100f);
+                    _manager.Black_Agent.AddReward(50f);
                 }
 
                 else if (_manager.BlackScore < _manager.WhiteScore)
                 {
                     Debug.Log("흰둥이 승리!");
-                    _manager.White_Agent.AddReward(100f);
+                    _manager.White_Agent.AddReward(50f);
                 }
                 else
                 {
                     Debug.Log("비김!");
-                    _manager.Black_Agent.AddReward(-5f);
-                    _manager.White_Agent.AddReward(-5f);
+                    // _manager.Black_Agent.AddReward(-5f);
+                    // _manager.White_Agent.AddReward(-5f);
                 }
                 _manager.Black_Agent.EndEpisode();
                 _manager.White_Agent.EndEpisode();
