@@ -5,6 +5,7 @@ namespace SinglePlay.State
     public class WhiteState : IState
     {
         private readonly GameManager _manager;
+        private readonly float _waitingTime;
 
         // private Thread _workerThread;
         // private Thread _cnnThread;
@@ -14,10 +15,12 @@ namespace SinglePlay.State
 
         // private SharedVars _progressVars;
         private (int, int)[] _targetStones;
+        private float _timer;
 
         public WhiteState(GameManager manager)
         {
             _manager = manager;
+            _waitingTime = _manager.waitingTime;
         }
 
         public void OnEnter()
@@ -32,8 +35,8 @@ namespace SinglePlay.State
             //
             // _workerThread = new Thread(() => WorkerThread(mcts, game));
             // _workerThread.Start();
+
             _targetStones = Cnn.Forward(_manager.GameBoard, 2, Random.Range(1, 4));
-            _manager.ChangeState(new BlackState(_manager));
         }
 
         public void OnExit()
@@ -58,6 +61,9 @@ namespace SinglePlay.State
             //     }
             //
             //     if (_endProgress) _manager.ChangeState(new BlackState(_manager));
+            _timer += Time.deltaTime;
+
+            if (_timer >= _waitingTime) _manager.ChangeState(new BlackState(_manager));
         }
 
         public void HandleInput(string input)

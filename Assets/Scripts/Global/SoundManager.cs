@@ -4,12 +4,12 @@ namespace Global
 {
     public class SoundManager : MonoBehaviour
     {
-        private static AudioClip _gameWin, _gameLose, _point, _remove, _ui, _bgm;
+        private static AudioClip _gameWin, _gameLose, _put, _error, _point, _remove, _ui, _bgm;
         private static AudioSource _bgmSource, _sfxSource, _gameEndSource;
 
         public static SoundManager instance;
         public static float bgmVolume, sfxVolume, gameEndVolume;
-        [SerializeField] private AudioClip gameWin, gameLose, point, remove, ui, bgm;
+        [SerializeField] private AudioClip gameWin, gameLose, put, error, point, remove, ui, bgm;
 
         private void Awake()
         {
@@ -29,6 +29,8 @@ namespace Global
             _bgm = bgm;
             _gameWin = gameWin;
             _gameLose = gameLose;
+            _put = put;
+            _error = error;
             _point = point;
             _remove = remove;
             _ui = ui;
@@ -52,6 +54,12 @@ namespace Global
                 case "GameLose":
                     _gameEndSource.PlayOneShot(_gameLose, 0.3f * gameEndVolume);
                     break;
+                case "Put":
+                    _sfxSource.PlayOneShot(_put, sfxVolume);
+                    break;
+                case "Error":
+                    _sfxSource.PlayOneShot(_error, 0.7f * sfxVolume);
+                    break;
                 case "Point":
                     _sfxSource.PlayOneShot(_point, sfxVolume);
                     break;
@@ -60,6 +68,9 @@ namespace Global
                     break;
                 case "UI":
                     _sfxSource.PlayOneShot(_ui, 2f * sfxVolume);
+                    break;
+                default:
+                    Debug.LogError("Wrong sound name. Please try again.");
                     break;
             }
         }
@@ -98,7 +109,7 @@ namespace Global
             }
             else
             {
-                Debug.Log("Wrong Sound Name. Please Check It Again.");
+                Debug.LogError("Wrong Sound Name. Please Check It Again.");
             }
         }
     }

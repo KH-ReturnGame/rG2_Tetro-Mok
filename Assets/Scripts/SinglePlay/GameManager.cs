@@ -39,8 +39,13 @@ namespace SinglePlay
 
         public TextMeshProUGUI whiteScoreText;
         public TextMeshProUGUI resultText;
-        [SerializeField] private float holdThreshold, interval;
+
+        [Space(10)] [Header("Game Settings")] [SerializeField]
+        private float holdThreshold;
+
+        [SerializeField] private float interval;
         [SerializeField] private int maxTurns;
+        public float waitingTime;
 
         private IState _currentState;
         private int _currentTurns;
@@ -250,7 +255,7 @@ namespace SinglePlay
                 stone.transform.SetParent(prevStones.transform);
             }
 
-            SoundManager.PlaySound(""); // TODO: Put Stone Sound
+            SoundManager.PlaySound("Put");
             CheckConnections(stonesToPut, player);
         }
 

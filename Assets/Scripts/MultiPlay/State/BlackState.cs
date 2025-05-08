@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Global;
+using UnityEngine;
 
 namespace MultiPlay.State
 {
@@ -80,6 +81,7 @@ namespace MultiPlay.State
                 case "ok":
                     if (!_canLocate)
                     {
+                        SoundManager.PlaySound("Error");
                         Debug.Log("Can't put stone on others");
                         break;
                     }
