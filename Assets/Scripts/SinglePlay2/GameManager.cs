@@ -362,10 +362,12 @@ namespace SinglePlay2
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(xLength);
+                            White_Agent.AddReward(-xLength*0.3f);
                         }
                         else
                         {
                             White_Agent.AddReward(xLength);
+                            Black_Agent.AddReward(-xLength*0.3f);
                         }
                     }
                 }
@@ -379,10 +381,12 @@ namespace SinglePlay2
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(xLength*2);
+                            White_Agent.AddReward(-xLength*0.6f);
                         }
                         else
                         {
                             White_Agent.AddReward(xLength*2);
+                            Black_Agent.AddReward(-xLength*0.6f);
                         }
                     }
                     
@@ -439,10 +443,12 @@ namespace SinglePlay2
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(yLength);
+                            White_Agent.AddReward(-yLength*0.3f);
                         }
                         else
                         {
                             White_Agent.AddReward(yLength);
+                            Black_Agent.AddReward(-yLength*0.3f);
                         }
                     }
                 }
@@ -456,10 +462,12 @@ namespace SinglePlay2
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(yLength*2);
+                            White_Agent.AddReward(-yLength*0.6f);
                         }
                         else
                         {
                             White_Agent.AddReward(yLength*2);
+                            Black_Agent.AddReward(-yLength*0.6f);
                         }
                     }
                     
@@ -518,10 +526,12 @@ namespace SinglePlay2
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(diagLength);
+                            White_Agent.AddReward(-diagLength*0.3f);
                         }
                         else
                         {
                             White_Agent.AddReward(diagLength);
+                            Black_Agent.AddReward(-diagLength*0.3f);
                         }
                     }
                 }
@@ -535,10 +545,12 @@ namespace SinglePlay2
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(diagLength*2);
+                            White_Agent.AddReward(-diagLength*0.6f);
                         }
                         else
                         {
                             White_Agent.AddReward(diagLength*2);
+                            Black_Agent.AddReward(-diagLength*0.6f);
                         }
                     }
                     
@@ -597,10 +609,12 @@ namespace SinglePlay2
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(diagLength);
+                            White_Agent.AddReward(-diagLength*0.3f);
                         }
                         else
                         {
                             White_Agent.AddReward(diagLength);
+                            Black_Agent.AddReward(-diagLength*0.3f);
                         }
                     }
                 }
@@ -614,10 +628,12 @@ namespace SinglePlay2
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(diagLength*2);
+                            White_Agent.AddReward(-diagLength*0.6f);
                         }
                         else
                         {
                             White_Agent.AddReward(diagLength*2);
+                            Black_Agent.AddReward(-diagLength*0.6f);
                         }
                     }
                     
@@ -687,10 +703,12 @@ namespace SinglePlay2
                         if (stoneType == 2)
                         {
                             Black_Agent.AddReward(xLength*3);
+                            White_Agent.AddReward(-xLength);
                         }
                         else
                         {
                             White_Agent.AddReward(xLength*3);
+                            Black_Agent.AddReward(-xLength);
                         }
                     }
                 }
@@ -739,10 +757,12 @@ namespace SinglePlay2
                         if (stoneType == 2)
                         {
                             Black_Agent.AddReward(yLength*3);
+                            White_Agent.AddReward(-yLength);
                         }
                         else
                         {
                             White_Agent.AddReward(yLength*3);
+                            Black_Agent.AddReward(-yLength);
                         }
                     }
                 }
@@ -794,10 +814,12 @@ namespace SinglePlay2
                         if (stoneType == 2)
                         {
                             Black_Agent.AddReward(diagLength*3);
+                            White_Agent.AddReward(-diagLength);
                         }
                         else
                         {
                             White_Agent.AddReward(diagLength*3);
+                            Black_Agent.AddReward(-diagLength);
                         }
                     }
                 }
@@ -849,10 +871,12 @@ namespace SinglePlay2
                         if (stoneType == 2)
                         {
                             Black_Agent.AddReward(diagLength*3);
+                            White_Agent.AddReward(-diagLength);
                         }
                         else
                         {
                             White_Agent.AddReward(diagLength*3);
+                            Black_Agent.AddReward(-diagLength);
                         }
                     }
                 }
