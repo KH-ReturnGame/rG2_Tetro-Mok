@@ -133,6 +133,7 @@ namespace SinglePlay2
             }
         }
         
+        // MyAgent.cs의 WriteDiscreteActionMask 메서드 내에서
         private void ApplyMaskForState(IState state, IDiscreteActionMask actionMask)
         {
             // 현재 조각의 위치 정보 가져오기
@@ -140,47 +141,35 @@ namespace SinglePlay2
             int maxX = _manager.maxX;
             int minY = _manager.minY;
             int maxY = _manager.maxY;
-            
+    
             // 보드 경계 체크 및 마스킹
             bool canMoveUp = maxY < 18;
             bool canMoveDown = minY > 0;
             bool canMoveLeft = minX > 0;
             bool canMoveRight = maxX < 18;
-            
+    
             // 상하좌우 이동 제한
             actionMask.SetActionEnabled(0, 0, canMoveUp);    // Up
             actionMask.SetActionEnabled(0, 1, canMoveDown);  // Down
             actionMask.SetActionEnabled(0, 2, canMoveLeft);  // Left
             actionMask.SetActionEnabled(0, 3, canMoveRight); // Right
-            
-            // 회전은 항상 가능 (회전 후 경계 체크는 게임로직에서 처리)
-            // actionMask.SetActionEnabled(0, 4, true);      // Rotate
-            
+    
+            // 회전은 항상 가능하게 함
+            actionMask.SetActionEnabled(0, 4, true);         // Rotate
+    
             // 둘 수 없는 위치에서는 OK 제한
             bool canPlace = CanPlaceCurrentShape();
             actionMask.SetActionEnabled(0, 5, canPlace);     // OK
+    
+            // 디버그 로그 추가
+            Debug.Log($"마스킹 상태: Up={canMoveUp}, Down={canMoveDown}, Left={canMoveLeft}, Right={canMoveRight}, OK={canPlace}");
         }
-        
-        // 현재 모양을 현재 위치에 놓을 수 있는지 확인
+
+        // CanPlaceCurrentShape 메서드에도 디버그 로그 추가
         private bool CanPlaceCurrentShape()
         {
-            // 현재 상태에서 _canLocate 값 가져오기
-            bool canLocate = true;
-            
-            if (_manager._currentState is BlackState blackState)
-            {
-                // 비공개 필드이므로 GameManager 함수를 통해 상태 확인
-                canLocate = _manager.CanPlaceCurrentPiece();
-            }
-            else if (_manager._currentState is WhiteState whiteState)
-            {
-                canLocate = _manager.CanPlaceCurrentPiece();
-            }
-            else if (_manager._currentState is InitialBlackState initialBlackState)
-            {
-                canLocate = _manager.CanPlaceCurrentPiece();
-            }
-            
+            bool canLocate = _manager.CanPlaceCurrentPiece();
+            Debug.Log($"CanPlaceCurrentShape: {canLocate}");
             return canLocate;
         }
 

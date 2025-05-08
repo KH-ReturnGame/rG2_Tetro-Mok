@@ -1131,7 +1131,7 @@ namespace SinglePlay2
             }
     
             // 현재 도형이 없으면 확인 불가
-            if (maxX < minX || maxY < minY) return false;
+            if (maxX < minX || maxY < minY) return true;
     
             // 보드에 충돌하는지 확인
             for (int i = minX; i <= maxX; i++)

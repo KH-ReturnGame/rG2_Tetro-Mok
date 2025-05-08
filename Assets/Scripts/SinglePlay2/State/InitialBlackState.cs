@@ -7,7 +7,7 @@ namespace SinglePlay2.State
     public class InitialBlackState : IState
     {
         private readonly GameManager _manager;
-        public bool _canLocate;
+        bool _canLocate =true;
         private int[,] _currentStones;
         private MoveDirection _direction;
         private GameObject _parent, _blackStoneNew, _blackStoneError;
@@ -81,44 +81,44 @@ namespace SinglePlay2.State
                 case "up":
                     _direction = MoveDirection.Up;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.Black_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.Black_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.Black_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.Black_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.Black_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "ok":
                     if (!_canLocate)
                     {
-                        _manager.Black_Agent.AddReward(-1f);
+                        _manager.Black_Agent.AddReward(-5f);
                         _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
                         Debug.Log("Can't put stone on others");
                         break;
                     }
 
                     _manager.Black_Agent.status = AgentStatus.Working;
-                    _manager.Black_Agent.AddReward(3f);
+                    _manager.Black_Agent.AddReward(4f);
                     // 다음 차례
                     _manager.ChangeState(new WhiteState(_manager));
                     break;

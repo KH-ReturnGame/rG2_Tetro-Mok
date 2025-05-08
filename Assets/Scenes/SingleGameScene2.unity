@@ -25315,7 +25315,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1848689761743928386, guid: 03990fd8c9ef743939915315b8ecb52d, type: 3}
       propertyPath: WhiteAI
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2522490633283006170, guid: 03990fd8c9ef743939915315b8ecb52d, type: 3}
       propertyPath: m_Camera
@@ -25344,7 +25344,7 @@ PrefabInstance:
     - target: {fileID: 6687827751464420641, guid: 03990fd8c9ef743939915315b8ecb52d, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: ee576e24880084361a2aea72ccd84abb, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 6991697953222340572, guid: 03990fd8c9ef743939915315b8ecb52d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

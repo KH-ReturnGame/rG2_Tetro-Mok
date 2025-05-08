@@ -5,7 +5,7 @@ namespace SinglePlay2.State
     public class WhiteState : IState
     {
         private readonly GameManager _manager;
-        public bool _canLocate;
+        bool _canLocate = true;
         private int[,] _currentStones;
         private MoveDirection _direction;
         private GameObject _parent, _whiteStoneNew, _whiteStoneError;
@@ -80,41 +80,41 @@ namespace SinglePlay2.State
                     _direction = MoveDirection.Up;
                     //ebug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.White_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "down":
                     _direction = MoveDirection.Down;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.White_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "left":
                     _direction = MoveDirection.Left;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.White_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "right":
                     _direction = MoveDirection.Right;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.White_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "rotate":
                     _direction = MoveDirection.Rotate;
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(-0.3f);
-                    //move_count++;
+                    _manager.White_Agent.AddReward(-0.1f*move_count);
+                    move_count++;
                     break;
                 case "ok":
                     if (!_canLocate)
                     {
-                        _manager.White_Agent.AddReward(-1f);
+                        _manager.White_Agent.AddReward(-5f);
                         // Debug.Log("white -> rtc");
                         _manager.White_Agent.status = AgentStatus.ReadyToChoose;
                         Debug.Log("Can't put stone on others");
@@ -123,7 +123,7 @@ namespace SinglePlay2.State
 
                     // Debug.Log("white -> working");
                     _manager.White_Agent.status = AgentStatus.Working;
-                    _manager.White_Agent.AddReward(3f);
+                    _manager.White_Agent.AddReward(4f);
                     // 다음 차례
                     _manager.ChangeState(new BlackState(_manager));
                     break;
