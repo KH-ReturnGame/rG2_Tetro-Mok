@@ -90,12 +90,23 @@ namespace SinglePlay2
             BlackScore = WhiteScore = 0;
             blackScoreText.text = "흑: 0";
             whiteScoreText.text = "백: 0";
-            
-            // Debug.Log("black, white -> working");
-            Black_Agent.status = AgentStatus.Working;
-            White_Agent.status = AgentStatus.Working;
-            AgentWorking = true;
-            
+    
+            // AI 상태 초기화
+            if (BlackAI)
+            {
+                Black_Agent.status = AgentStatus.Working;
+            }
+            if (WhiteAI)
+            {
+                White_Agent.status = AgentStatus.Working;
+            }
+            AgentWorking = BlackAI || WhiteAI;
+    
+            // 게임 종료 화면 비활성화
+            gameEndScreen.SetActive(false);
+            _isGameEnded = false;
+    
+            // 이전 돌 정리
             for (int i = prevStones.transform.childCount - 1; i >= 0; i--)
             {
                 GameObject child = prevStones.transform.GetChild(i).gameObject;
@@ -106,9 +117,28 @@ namespace SinglePlay2
                 GameObject child = currentStones.transform.GetChild(i).gameObject;
                 Destroy(child);
             }
-            
+    
             _currentState = new GameStartState(this);
             _currentState.OnEnter();
+        }
+
+        private void Start()
+        {
+            // 게임 초기화 및 시작
+            Restart();
+    
+            // 각 Agent 초기화
+            if (BlackAI)
+            {
+                Black_Agent.status = AgentStatus.Working;
+            }
+    
+            if (WhiteAI)
+            {
+                White_Agent.status = AgentStatus.Working;
+            }
+    
+            AgentWorking = BlackAI || WhiteAI;
         }
 
         private void Update()
@@ -171,10 +201,64 @@ namespace SinglePlay2
                     White_Agent.RequestDecision();
                 }
             }
-            // 반 반
+            // 반 반 (한쪽은 AI, 한쪽은 사람)
             else
             {
+                // AI 차례일 때 AI의 의사결정을 요청
+                if (BlackAI && _currentState is BlackState && Black_Agent.status == AgentStatus.ReadyToChoose)
+                {
+                    Black_Agent.RequestDecision();
+                }
+                else if (BlackAI && _currentState is InitialBlackState && Black_Agent.status == AgentStatus.ReadyToChoose)
+                {
+                    Black_Agent.RequestDecision();
+                }
+                else if (WhiteAI && _currentState is WhiteState && White_Agent.status == AgentStatus.ReadyToChoose)
+                {
+                    White_Agent.RequestDecision();
+                }
                 
+                // 사람 차례일 때 키 입력 처리
+                if ((!BlackAI && (_currentState is BlackState || _currentState is InitialBlackState)) || 
+                    (!WhiteAI && _currentState is WhiteState))
+                {
+                    if (Input.anyKeyDown)
+                    {
+                        if (!_isPaused)
+                        {
+                            if (Input.GetKeyDown(KeyCode.Return)) _currentState.HandleInput("ok");
+                            if (Input.GetKeyDown(KeyCode.R)) _currentState.HandleInput("rotate");
+                            if (Input.GetKeyDown(KeyCode.UpArrow))
+                                StartCoroutine(CheckHoldTime(KeyCode.UpArrow, "up"));
+
+                            if (Input.GetKeyDown(KeyCode.DownArrow))
+                                StartCoroutine(CheckHoldTime(KeyCode.DownArrow, "down"));
+
+                            if (Input.GetKeyDown(KeyCode.LeftArrow))
+                                StartCoroutine(CheckHoldTime(KeyCode.LeftArrow, "left"));
+
+                            if (Input.GetKeyDown(KeyCode.RightArrow))
+                                StartCoroutine(CheckHoldTime(KeyCode.RightArrow, "right"));
+                            if (Input.GetKeyDown(KeyCode.W))
+                                StartCoroutine(CheckHoldTime(KeyCode.W, "w"));
+
+                            if (Input.GetKeyDown(KeyCode.A))
+                                StartCoroutine(CheckHoldTime(KeyCode.A, "a"));
+
+                            if (Input.GetKeyDown(KeyCode.S))
+                                StartCoroutine(CheckHoldTime(KeyCode.S, "s"));
+
+                            if (Input.GetKeyDown(KeyCode.D))
+                                StartCoroutine(CheckHoldTime(KeyCode.D, "d"));
+                        }
+
+                        if (Input.GetKeyDown(KeyCode.Escape) && !_isGameEnded)
+                        {
+                            _currentState.HandleInput("escape");
+                            PauseResume();
+                        }
+                    }
+                }
             }
             _currentState.Update();
         }

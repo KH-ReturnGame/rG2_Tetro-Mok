@@ -323,6 +323,7 @@ namespace SinglePlay2.State
 
         private IEnumerator ApplyEffectsToGroups(List<List<Vector2Int>> groups)
         {
+            // 둘 다 AI인 경우 - 빠른 진행
             if (_manager.BlackAI && _manager.WhiteAI)
             {
                 foreach (var group in groups)
@@ -382,7 +383,6 @@ namespace SinglePlay2.State
                     _manager.Black_Agent.AddReward(50f);
                     _manager.White_Agent.AddReward(-10f);
                 }
-
                 else if (_manager.BlackScore < _manager.WhiteScore)
                 {
                     Debug.Log("흰둥이 승리!");
@@ -399,6 +399,7 @@ namespace SinglePlay2.State
                 _manager.White_Agent.EndEpisode();
                 _manager.Restart();
             }
+            // 한 쪽만 AI이거나 둘 다 사람인 경우 - 일반 진행 (애니메이션 포함)
             else
             {
                 foreach (var group in groups)
@@ -452,12 +453,47 @@ namespace SinglePlay2.State
 
                 yield return new WaitForSeconds(2f);
 
+                // AI에 대한 보상 계산
+                if (_manager.BlackAI)
+                {
+                    if (_manager.BlackScore > _manager.WhiteScore)
+                    {
+                        _manager.Black_Agent.AddReward(50f);
+                        _manager.Black_Agent.EndEpisode();
+                    }
+                    else if (_manager.BlackScore < _manager.WhiteScore)
+                    {
+                        _manager.Black_Agent.AddReward(-10f);
+                        _manager.Black_Agent.EndEpisode();
+                    }
+                    else
+                    {
+                        _manager.Black_Agent.EndEpisode();
+                    }
+                }
+                else if (_manager.WhiteAI)
+                {
+                    if (_manager.BlackScore < _manager.WhiteScore)
+                    {
+                        _manager.White_Agent.AddReward(50f);
+                        _manager.White_Agent.EndEpisode();
+                    }
+                    else if (_manager.BlackScore > _manager.WhiteScore)
+                    {
+                        _manager.White_Agent.AddReward(-10f);
+                        _manager.White_Agent.EndEpisode();
+                    }
+                    else
+                    {
+                        _manager.White_Agent.EndEpisode();
+                    }
+                }
+
                 if (_manager.BlackScore > _manager.WhiteScore)
                 {
                     Debug.Log("바둑이 승리!");
                     _manager.SetGameEndScreen(1);
                 }
-
                 else if (_manager.BlackScore < _manager.WhiteScore)
                 {
                     Debug.Log("흰둥이 승리!");
@@ -468,9 +504,9 @@ namespace SinglePlay2.State
                     Debug.Log("비김!");
                     _manager.SetGameEndScreen(0);
                 }
+                
+                // 만약 한 쪽만 AI인 경우 재시작하지 않고 게임 종료 화면을 보여줍니다
             }
-            
-            
         }
     }
 }

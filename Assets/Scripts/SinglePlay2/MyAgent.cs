@@ -21,13 +21,22 @@ namespace SinglePlay2
         private bool hb = false;
         public override void Initialize()
         {
+            base.Initialize();
             status = AgentStatus.Ready;
         }
+
         public override void OnEpisodeBegin()
         {
             status = AgentStatus.Ready;
+    
+            // 현재 상태가 자신의 차례에 해당하는 상태인지 확인하고,
+            // 자신의 차례라면 ReadyToChoose로 변경
+            if ((AgentType == Type.Black && (_manager._currentState is BlackState || _manager._currentState is InitialBlackState)) ||
+                (AgentType == Type.White && _manager._currentState is WhiteState))
+            {
+                status = AgentStatus.ReadyToChoose;
+            }
         }
-        
         public override void CollectObservations(VectorSensor sensor)
         {
             // 1) 보드 상태 (19×19), 0=빈, 1=흑, 2=백

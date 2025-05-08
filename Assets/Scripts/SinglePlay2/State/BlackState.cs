@@ -40,6 +40,10 @@ namespace SinglePlay2.State
             _parent = _manager.currentStones;
             _direction = MoveDirection.Idle;
             InitStones();
+            if (_manager.BlackAI)
+            {
+                _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
+            }
             if (_manager.count >= _manager.max_count_)
             {
                 _manager.ChangeState(new EndGameState(_manager,_manager.GameBoard));
@@ -160,7 +164,10 @@ namespace SinglePlay2.State
 
             _manager.CheckEndGame(_currentStones);
             RenderStones();
-            _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
+            if (_manager.BlackAI)
+            {
+                _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
+            }
         }
 
         /// <summary>
@@ -266,7 +273,10 @@ namespace SinglePlay2.State
 
                     stone.transform.SetParent(_parent.transform);
                 }
-            _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
+            if (_manager.BlackAI)
+            {
+                _manager.Black_Agent.status = AgentStatus.ReadyToChoose;
+            }
         }
     }
 }
