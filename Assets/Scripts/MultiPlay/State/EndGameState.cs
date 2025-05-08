@@ -69,6 +69,15 @@ namespace MultiPlay.State
                         connectionLength = 1;
                     }
                 }
+
+                // 행의 끝에 도달했을 때 마지막 연결 확인
+                if (connectionLength >= 5)
+                {
+                    var currentConnections = new List<Vector2Int>();
+                    for (var i = connectionLength; i > 0; i--)
+                        currentConnections.Add(new Vector2Int(19 - i, y));
+                    stonesToAnimate.Add(currentConnections);
+                }
             }
 
             // 세로 연결 탐색
@@ -118,6 +127,15 @@ namespace MultiPlay.State
                         connectionLength = 1;
                     }
                 }
+
+                // 열의 끝에 도달했을 때 마지막 연결 확인
+                if (connectionLength >= 5)
+                {
+                    var currentConnections = new List<Vector2Int>();
+                    for (var i = connectionLength; i > 0; i--)
+                        currentConnections.Add(new Vector2Int(x, i - 1));
+                    stonesToAnimate.Add(currentConnections);
+                }
             }
 
             // 왼쪽 위에서 오른쪽 아래 대각선 탐색
@@ -164,6 +182,15 @@ namespace MultiPlay.State
                         connectionLength = 1;
                     }
                 }
+
+                // 대각선의 끝에 도달했을 때 마지막 연결 확인
+                if (connectionLength >= 5)
+                {
+                    var currentConnections = new List<Vector2Int>();
+                    for (var i = connectionLength; i > 0; i--)
+                        currentConnections.Add(new Vector2Int(19 - i, 19 - i));
+                    stonesToAnimate.Add(currentConnections);
+                }
             }
 
             for (var startY = 1; startY < 19; startY++)
@@ -208,6 +235,15 @@ namespace MultiPlay.State
                         checkingStoneType = _gameBoard[x, y];
                         connectionLength = 1;
                     }
+                }
+
+                // 대각선의 끝에 도달했을 때 마지막 연결 확인
+                if (connectionLength >= 5)
+                {
+                    var currentConnections = new List<Vector2Int>();
+                    for (var i = connectionLength; i > 0; i--)
+                        currentConnections.Add(new Vector2Int(19 - i, 19 - i));
+                    stonesToAnimate.Add(currentConnections);
                 }
             }
 
@@ -255,6 +291,15 @@ namespace MultiPlay.State
                         connectionLength = 1;
                     }
                 }
+
+                // 대각선의 끝에 도달했을 때 마지막 연결 확인
+                if (connectionLength >= 5)
+                {
+                    var currentConnections = new List<Vector2Int>();
+                    for (var i = connectionLength; i > 0; i--)
+                        currentConnections.Add(new Vector2Int(i - 1, 19 - i));
+                    stonesToAnimate.Add(currentConnections);
+                }
             }
 
             for (var startY = 1; startY < 19; startY++)
@@ -299,6 +344,15 @@ namespace MultiPlay.State
                         checkingStoneType = _gameBoard[x, y];
                         connectionLength = 1;
                     }
+                }
+
+                // 대각선의 끝에 도달했을 때 마지막 연결 확인
+                if (connectionLength >= 5)
+                {
+                    var currentConnections = new List<Vector2Int>();
+                    for (var i = connectionLength; i > 0; i--)
+                        currentConnections.Add(new Vector2Int(i - 1, 19 - i));
+                    stonesToAnimate.Add(currentConnections);
                 }
             }
 

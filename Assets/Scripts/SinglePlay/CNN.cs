@@ -23,7 +23,7 @@ namespace SinglePlay
             _inputShape = new TensorShape(1, 3, 19, 19);
             _outputShape = new TensorShape(19, 19, 4);
             _runtimeModel = ModelLoader.Load(Application.streamingAssetsPath + "/model_output.sentis");
-            _worker = new Worker(_runtimeModel, BackendType.CPU); // WebGL에서 느릴 수도 있다고 함. 어쩌겠어 근데..
+            _worker = new Worker(_runtimeModel, BackendType.CPU);
         }
 
         public static (int, int)[] Forward(int[,] board, int currentPlayer, int stoneType)
