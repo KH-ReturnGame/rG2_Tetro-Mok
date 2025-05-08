@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Security.Cryptography.X509Certificates;
+using UnityEngine;
 
 namespace SinglePlay2.State
 {
     public class BlackState : IState
     {
         private readonly GameManager _manager;
-        private bool _canLocate;
+        public bool _canLocate;
         private int[,] _currentStones;
         private MoveDirection _direction;
         private GameObject _parent, _blackStoneNew, _blackStoneError;

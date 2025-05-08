@@ -1078,5 +1078,73 @@ namespace SinglePlay2
 
             return (cur, curW, curH);
         }
+        
+        // GameManager.cs에 다음 함수 추가
+
+        /// <summary>
+        /// 현재 플레이 중인 상태에서 조각을 놓을 수 있는지 확인
+        /// </summary>
+        /// <returns>현재 조각을 배치할 수 있는지 여부</returns>
+        public bool CanPlaceCurrentPiece()
+        {
+            // 현재 State에서 _canLocate 값 확인
+            if (_currentState is BlackState blackState)
+            {
+                return CheckPieceCanBePlaced(1);
+            }
+            else if (_currentState is WhiteState whiteState)
+            {
+                return CheckPieceCanBePlaced(2);
+            }
+            else if (_currentState is InitialBlackState initialBlackState)
+            {
+                return CheckPieceCanBePlaced(1);
+            }
+    
+            return false;
+        }
+
+        /// <summary>
+        /// 주어진 타입의 돌이 현재 위치에 놓일 수 있는지 확인
+        /// </summary>
+        private bool CheckPieceCanBePlaced(int stoneType)
+        {
+            // 현재 도형의 위치 찾기
+            int minX = 19, maxX = -1, minY = 19, maxY = -1;
+            int[,] currentPiece = new int[19, 19];
+    
+            // 현재 도형 위치 확인
+            for (int i = 0; i < 19; i++)
+            for (int j = 0; j < 19; j++)
+            {
+                // 현재 렌더링된 도형 찾기 (돌의 위치 확인)
+                Transform stone = currentStones.transform.Find(i + "_" + j);
+                if (stone != null)
+                {
+                    currentPiece[i, j] = stoneType;
+            
+                    if (i < minX) minX = i;
+                    if (i > maxX) maxX = i;
+                    if (j < minY) minY = j;
+                    if (j > maxY) maxY = j;
+                }
+            }
+    
+            // 현재 도형이 없으면 확인 불가
+            if (maxX < minX || maxY < minY) return false;
+    
+            // 보드에 충돌하는지 확인
+            for (int i = minX; i <= maxX; i++)
+            for (int j = minY; j <= maxY; j++)
+            {
+                if (currentPiece[i, j] != 0 && GameBoard[i, j] != 0)
+                {
+                    // 이미 돌이 있는 위치
+                    return false;
+                }
+            }
+    
+            return true;
+        }
     }
 }

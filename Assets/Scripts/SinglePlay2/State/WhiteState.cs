@@ -5,7 +5,7 @@ namespace SinglePlay2.State
     public class WhiteState : IState
     {
         private readonly GameManager _manager;
-        private bool _canLocate;
+        public bool _canLocate;
         private int[,] _currentStones;
         private MoveDirection _direction;
         private GameObject _parent, _whiteStoneNew, _whiteStoneError;
