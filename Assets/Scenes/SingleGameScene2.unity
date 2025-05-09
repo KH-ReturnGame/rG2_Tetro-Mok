@@ -50171,7 +50171,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1848689761743928386, guid: 03990fd8c9ef743939915315b8ecb52d, type: 3}
       propertyPath: BlackAI
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1848689761743928386, guid: 03990fd8c9ef743939915315b8ecb52d, type: 3}
       propertyPath: WhiteAI
@@ -50228,7 +50228,7 @@ PrefabInstance:
     - target: {fileID: 7585221249879120926, guid: 03990fd8c9ef743939915315b8ecb52d, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: a954bd549a427490aa5b8d82a627101a, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 7585221249879120926, guid: 03990fd8c9ef743939915315b8ecb52d, type: 3}
       propertyPath: m_BehaviorType
       value: 0
