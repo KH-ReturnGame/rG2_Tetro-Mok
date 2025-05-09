@@ -92,15 +92,15 @@ namespace SinglePlay2
             whiteScoreText.text = "백: 0";
     
             // AI 상태 초기화
-            if (BlackAI)
-            {
-                Black_Agent.status = AgentStatus.Working;
-            }
-            if (WhiteAI)
-            {
-                White_Agent.status = AgentStatus.Working;
-            }
-            AgentWorking = BlackAI || WhiteAI;
+            // if (BlackAI)
+            // {
+            //     Black_Agent.status = AgentStatus.Working;
+            // }
+            // if (WhiteAI)
+            // {
+            //     White_Agent.status = AgentStatus.Working;
+            // }
+            // AgentWorking = BlackAI || WhiteAI;
     
             // 게임 종료 화면 비활성화
             gameEndScreen.SetActive(false);
@@ -126,19 +126,6 @@ namespace SinglePlay2
         {
             // 게임 초기화 및 시작
             Restart();
-    
-            // 각 Agent 초기화
-            if (BlackAI)
-            {
-                Black_Agent.status = AgentStatus.Working;
-            }
-    
-            if (WhiteAI)
-            {
-                White_Agent.status = AgentStatus.Working;
-            }
-    
-            AgentWorking = BlackAI || WhiteAI;
         }
 
         private void Update()
