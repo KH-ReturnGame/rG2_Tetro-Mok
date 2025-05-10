@@ -63,7 +63,7 @@ namespace SinglePlay.State
             //     if (_endProgress) _manager.ChangeState(new BlackState(_manager));
             _timer += Time.deltaTime;
 
-            if (_timer >= _waitingTime) _manager.ChangeState(new BlackState(_manager));
+            if (_targetStones.Length == 3 && _timer >= _waitingTime) _manager.ChangeState(new BlackState(_manager));
         }
 
         public void HandleInput(string input)
