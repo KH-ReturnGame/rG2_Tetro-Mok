@@ -45,6 +45,9 @@ namespace SinglePlay
 
         [SerializeField] private float interval;
         [SerializeField] private int maxTurns;
+        public int connectFiveScore;
+        public int connectTenScore;
+        public int bonusScore;
         public float waitingTime;
 
         private IState _currentState;
@@ -470,9 +473,9 @@ namespace SinglePlay
             }
 
             if (stoneType == 1)
-                UpdateScores(deletedLines * 10, 0);
+                UpdateScores(deletedLines * connectTenScore, 0);
             else
-                UpdateScores(0, deletedLines * 10);
+                UpdateScores(0, deletedLines * connectTenScore);
 
             if (deletedLines > 0) SoundManager.PlaySound("Remove");
 
@@ -481,9 +484,9 @@ namespace SinglePlay
                 if (GameBoard[i, j] == 3)
                 {
                     if (stoneType == 1)
-                        UpdateScores(3, 0);
+                        UpdateScores(bonusScore, 0);
                     else
-                        UpdateScores(0, 3);
+                        UpdateScores(0, bonusScore);
                 }
 
                 GameBoard[i, j] = 0;

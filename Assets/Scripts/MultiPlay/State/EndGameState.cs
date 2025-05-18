@@ -407,8 +407,8 @@ namespace MultiPlay.State
                     }
                 }
 
-                if (stoneType == 1) _manager.UpdateScores(5 + bonusNumber * 3, 0);
-                else _manager.UpdateScores(0, 5 + bonusNumber * 3);
+                if (stoneType == 1) _manager.UpdateScores(_manager.connectFiveScore + bonusNumber * _manager.bonusScore, 0);
+                else _manager.UpdateScores(0, _manager.connectFiveScore + bonusNumber * _manager.bonusScore);
 
                 yield return new WaitForSeconds(0.5f);
 

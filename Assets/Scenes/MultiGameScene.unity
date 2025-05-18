@@ -1498,6 +1498,9 @@ MonoBehaviour:
   holdThreshold: 0.7
   interval: 0.05
   maxTurns: 30
+  connectFiveScore: 3
+  connectTenScore: 20
+  bonusScore: 1
 --- !u!1 &976485959
 GameObject:
   m_ObjectHideFlags: 0
