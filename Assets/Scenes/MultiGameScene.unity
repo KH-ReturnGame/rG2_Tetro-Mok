@@ -1497,7 +1497,7 @@ MonoBehaviour:
   resultText: {fileID: 674389352}
   holdThreshold: 0.7
   interval: 0.05
-  maxTurns: 30
+  maxTurns: 40
   connectFiveScore: 3
   connectTenScore: 20
   bonusScore: 1

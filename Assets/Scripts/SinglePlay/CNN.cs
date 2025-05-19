@@ -7,8 +7,10 @@ namespace SinglePlay
     {
         public static Cnn instance;
         private static TensorShape _inputShape, _outputShape;
+        private static ModelAsset _staticModelAsset;
         private static Model _runtimeModel;
         private static Worker _worker;
+        [SerializeField] private ModelAsset modelAsset;
 
         private void Awake()
         {
@@ -22,7 +24,8 @@ namespace SinglePlay
 
             _inputShape = new TensorShape(1, 3, 19, 19);
             _outputShape = new TensorShape(19, 19, 4);
-            _runtimeModel = ModelLoader.Load(Application.streamingAssetsPath + "/model_output.sentis");
+            _staticModelAsset = modelAsset;
+            _runtimeModel = ModelLoader.Load(_staticModelAsset);
             _worker = new Worker(_runtimeModel, BackendType.CPU);
         }
 

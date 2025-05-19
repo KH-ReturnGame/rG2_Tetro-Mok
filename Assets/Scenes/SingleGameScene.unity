@@ -1433,7 +1433,7 @@ MonoBehaviour:
   resultText: {fileID: 168129710}
   holdThreshold: 0.7
   interval: 0.05
-  maxTurns: 30
+  maxTurns: 40
   connectFiveScore: 3
   connectTenScore: 20
   bonusScore: 1
@@ -1482,6 +1482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c01c7c8a30149e195d6cf1e110ca3ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  modelAsset: {fileID: 5022602860645237092, guid: 9ba894ed197d9d34b8f1f31f74d1b250, type: 3}
 --- !u!4 &725477609
 Transform:
   m_ObjectHideFlags: 0
