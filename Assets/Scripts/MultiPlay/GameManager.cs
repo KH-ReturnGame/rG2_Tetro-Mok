@@ -40,6 +40,7 @@ namespace MultiPlay
         public TextMeshProUGUI blackScoreText;
 
         public TextMeshProUGUI whiteScoreText;
+        public TextMeshProUGUI turnText;
         public TextMeshProUGUI resultText;
 
         [Space(10)] [Header("Game Settings")] [SerializeField]
@@ -154,7 +155,8 @@ namespace MultiPlay
         /// </returns>
         private bool IncreaseTurns()
         {
-            if (++_currentTurns > maxTurns) return true;
+            turnText.text = "현재 차례: " + ++_currentTurns + "/" + maxTurns;
+            if (_currentTurns > maxTurns) return true;
             return false;
         }
 
