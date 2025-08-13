@@ -154,11 +154,12 @@ namespace SinglePlay.State
 
             var height = maxY - minY + 1;
             var width = maxX - minX + 1;
-            var shape = new int[width, height];
+            var shape = new int[width][];
+            for (var index = 0; index < width; index++) shape[index] = new int[height];
 
             for (var i = 0; i < width; i++)
             for (var j = 0; j < height; j++)
-                shape[i, j] = _currentStones[minX + i, minY + j];
+                shape[i][j] = _currentStones[minX + i, minY + j];
 
             // 보드 초기화
             _currentStones = new int[19, 19];
@@ -167,10 +168,12 @@ namespace SinglePlay.State
             if (_direction == MoveDirection.Rotate)
             {
                 // 시계 방향 90도 회전
-                var rotatedShape = new int[height, width];
+                var rotatedShape = new int[height][];
+                for (var index = 0; index < height; index++) rotatedShape[index] = new int[width];
+
                 for (var i = 0; i < width; i++)
                 for (var j = 0; j < height; j++)
-                    rotatedShape[j, width - i - 1] = shape[i, j];
+                    rotatedShape[j][width - i - 1] = shape[i][j];
 
                 // 회전된 도형을 원래 위치에 맞춰 배치
                 int offsetX = 0, offsetY = 0;
@@ -180,7 +183,7 @@ namespace SinglePlay.State
 
                 for (var i = 0; i < height; i++)
                 for (var j = 0; j < width; j++)
-                    _currentStones[minX + i + offsetX, minY + j + offsetY] = rotatedShape[i, j];
+                    _currentStones[minX + i + offsetX, minY + j + offsetY] = rotatedShape[i][j];
             }
             // 상하좌우로 이동하는 경우
             else
@@ -193,7 +196,7 @@ namespace SinglePlay.State
 
                 for (var i = 0; i < width; i++)
                 for (var j = 0; j < height; j++)
-                    _currentStones[minX + i + moveX, minY + j + moveY] = shape[i, j];
+                    _currentStones[minX + i + moveX, minY + j + moveY] = shape[i][j];
             }
 
             RenderStones();

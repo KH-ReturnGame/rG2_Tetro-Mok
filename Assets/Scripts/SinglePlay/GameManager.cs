@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Global;
+using SinglePlay.AI;
 using SinglePlay.State;
 using TMPro;
 using UnityEngine;
@@ -42,21 +43,26 @@ namespace SinglePlay
         public TextMeshProUGUI resultText;
 
         [Space(10)] [Header("Game Settings")] [SerializeField]
-        private float holdThreshold;
+        public float holdThreshold;
 
-        [SerializeField] private float interval;
-        [SerializeField] private int maxTurns;
+        public float interval;
+        public int maxTurns;
         public int connectFiveScore;
         public int connectTenScore;
         public int bonusScore;
-        public float waitingTime;
+
+        [HideInInspector] public int currentTurns;
+
+        public PolicyNetwork policy;
+        public ValueNetwork value;
 
         private IState _currentState;
-        private int _currentTurns;
 
         private bool _isPaused, _isGameEnded;
 
         public int[,] GameBoard;
+        public List<List<(int, int)>> PrevActions;
+
         public int BlackScore { get; private set; }
 
         public int WhiteScore { get; private set; }
@@ -65,6 +71,7 @@ namespace SinglePlay
         {
             _currentState = new GameStartState(this);
             _currentState.OnEnter();
+            PrevActions = new List<List<(int, int)>>();
         }
 
         private void Update()
@@ -158,8 +165,8 @@ namespace SinglePlay
         /// </returns>
         private bool IncreaseTurns()
         {
-            turnText.text = "현재 차례: " + ++_currentTurns + "/" + maxTurns;
-            if (_currentTurns > maxTurns) return true;
+            turnText.text = "현재 차례: " + ++currentTurns + "/" + maxTurns;
+            if (currentTurns > maxTurns) return true;
             return false;
         }
 
@@ -226,6 +233,7 @@ namespace SinglePlay
             gameEndScreen.SetActive(true);
         }
 
+
         /// <summary>
         ///     돌을 배치 및 렌더링하고, 연결 상태를 확인한다.
         /// </summary>
@@ -233,9 +241,14 @@ namespace SinglePlay
         /// <param name="player">돌 종류 [흑/백]</param>
         public void PutStones((int, int)[] stonesToPut, int player)
         {
+            if (PrevActions.Count == 3) PrevActions.RemoveAt(0);
+            var currentAction = new List<(int, int)>();
+
             // 돌 배치 및 렌더링
             foreach (var (i, j) in stonesToPut)
             {
+                currentAction.Add((i, j));
+
                 GameObject stone;
                 if (Random.Range(0, 15) == 0)
                 {
@@ -259,6 +272,8 @@ namespace SinglePlay
                 stone.name = i + "_" + j;
                 stone.transform.SetParent(prevStones.transform);
             }
+
+            PrevActions.Add(currentAction);
 
             SoundManager.PlaySound("Put");
             CheckConnections(stonesToPut, player);
