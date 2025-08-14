@@ -1,11 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Global;
+using SinglePlay2.AI;
 using SinglePlay2.State;
 using TMPro;
-using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -13,6 +12,14 @@ namespace SinglePlay2
 {
     public class GameManager : MonoBehaviour
     {
+        public enum MoveDirection
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
+
         [Header("Stone Prefabs")] [SerializeField]
         public GameObject blackStone;
 
@@ -48,79 +55,41 @@ namespace SinglePlay2
         public float holdThreshold = 0.7f;
         public float interval = 0.05f;
 
+        // 추가한 설정들
+        public int currentTurns;
+        public int maxTurns;
+        public PolicyNetwork policy;
+        public ValueNetwork value;
+
+        [Space(10)] [Header("ML-Agents")] [SerializeField]
+        public int count;
+
+        [HideInInspector] public double max_count_ = 64;
+
+        public bool BlackAI;
+        public bool WhiteAI;
+        public MyAgent Black_Agent;
+        public MyAgent White_Agent;
+
+        [HideInInspector] public int ShapeWidth;
+
+        [HideInInspector] public int ShapeHeight;
+
+        [HideInInspector] public int minX, maxX, minY, maxY;
+
         public IState _currentState;
 
         private bool _isPaused, _isGameEnded;
 
+        private bool AgentWorking = false;
+        public int[,] CurrentShape;
+
         public int[,] GameBoard;
+
+        public List<List<(int, int)>> PrevActions;
         public int BlackScore { get; private set; }
 
         public int WhiteScore { get; private set; }
-
-        [Space(10)] [Header("ML-Agents")] [SerializeField]
-        public int count = 0;
-        
-        [HideInInspector]
-        public double max_count_ = 64;
-        public bool BlackAI = false;
-        public bool WhiteAI = false;
-        public MyAgent Black_Agent;
-        public MyAgent White_Agent;
-        public int[,] CurrentShape;
-        [HideInInspector]
-        public int ShapeWidth;
-        [HideInInspector]
-        public int ShapeHeight;
-        [HideInInspector]
-        public int minX, maxX, minY, maxY;
-
-        private bool AgentWorking = false;
-        
-        public enum MoveDirection
-        {
-            Up,
-            Down,
-            Left,
-            Right,
-        }
-        
-        public void Restart()
-        {
-            count = 0;
-            BlackScore = WhiteScore = 0;
-            blackScoreText.text = "흑: 0";
-            whiteScoreText.text = "백: 0";
-    
-            // AI 상태 초기화
-            // if (BlackAI)
-            // {
-            //     Black_Agent.status = AgentStatus.Working;
-            // }
-            // if (WhiteAI)
-            // {
-            //     White_Agent.status = AgentStatus.Working;
-            // }
-            // AgentWorking = BlackAI || WhiteAI;
-    
-            // 게임 종료 화면 비활성화
-            gameEndScreen.SetActive(false);
-            _isGameEnded = false;
-    
-            // 이전 돌 정리
-            for (int i = prevStones.transform.childCount - 1; i >= 0; i--)
-            {
-                GameObject child = prevStones.transform.GetChild(i).gameObject;
-                Destroy(child);
-            }
-            for (int i = currentStones.transform.childCount - 1; i >= 0; i--)
-            {
-                GameObject child = currentStones.transform.GetChild(i).gameObject;
-                Destroy(child);
-            }
-    
-            _currentState = new GameStartState(this);
-            _currentState.OnEnter();
-        }
 
         private void Start()
         {
@@ -174,41 +143,29 @@ namespace SinglePlay2
             else if (BlackAI && WhiteAI)
             {
                 if (Black_Agent.status == AgentStatus.Ready && White_Agent.status == AgentStatus.Ready)
-                {
                     Restart();
-                }
                 else if (Black_Agent.status == AgentStatus.ReadyToChoose)
-                {
                     // Debug.Log("검정 고르자");
                     Black_Agent.RequestDecision();
-                }
                 else if (White_Agent.status == AgentStatus.ReadyToChoose)
-                {
                     // Debug.Log("하양 고르자");
                     White_Agent.RequestDecision();
-                }
             }
             // 반 반 (한쪽은 AI, 한쪽은 사람)
             else
             {
                 // AI 차례일 때 AI의 의사결정을 요청
                 if (BlackAI && _currentState is BlackState && Black_Agent.status == AgentStatus.ReadyToChoose)
-                {
                     Black_Agent.RequestDecision();
-                }
-                else if (BlackAI && _currentState is InitialBlackState && Black_Agent.status == AgentStatus.ReadyToChoose)
-                {
+                else if (BlackAI && _currentState is InitialBlackState &&
+                         Black_Agent.status == AgentStatus.ReadyToChoose)
                     Black_Agent.RequestDecision();
-                }
                 else if (WhiteAI && _currentState is WhiteState && White_Agent.status == AgentStatus.ReadyToChoose)
-                {
                     White_Agent.RequestDecision();
-                }
-                
+
                 // 사람 차례일 때 키 입력 처리
-                if ((!BlackAI && (_currentState is BlackState || _currentState is InitialBlackState)) || 
+                if ((!BlackAI && (_currentState is BlackState || _currentState is InitialBlackState)) ||
                     (!WhiteAI && _currentState is WhiteState))
-                {
                     if (Input.anyKeyDown)
                     {
                         if (!_isPaused)
@@ -245,9 +202,50 @@ namespace SinglePlay2
                             PauseResume();
                         }
                     }
-                }
             }
+
             _currentState.Update();
+        }
+
+        public void Restart()
+        {
+            count = 0;
+            BlackScore = WhiteScore = 0;
+            blackScoreText.text = "흑: 0";
+            whiteScoreText.text = "백: 0";
+
+            // AI 상태 초기화
+            // if (BlackAI)
+            // {
+            //     Black_Agent.status = AgentStatus.Working;
+            // }
+            // if (WhiteAI)
+            // {
+            //     White_Agent.status = AgentStatus.Working;
+            // }
+            // AgentWorking = BlackAI || WhiteAI;
+
+            // 게임 종료 화면 비활성화
+            gameEndScreen.SetActive(false);
+            _isGameEnded = false;
+
+            // 이전 돌 정리
+            for (var i = prevStones.transform.childCount - 1; i >= 0; i--)
+            {
+                var child = prevStones.transform.GetChild(i).gameObject;
+                Destroy(child);
+            }
+
+            for (var i = currentStones.transform.childCount - 1; i >= 0; i--)
+            {
+                var child = currentStones.transform.GetChild(i).gameObject;
+                Destroy(child);
+            }
+
+            PrevActions = new List<List<(int, int)>>();
+
+            _currentState = new GameStartState(this);
+            _currentState.OnEnter();
         }
 
 
@@ -287,11 +285,34 @@ namespace SinglePlay2
             whiteScoreText.text = "백: " + WhiteScore;
         }
 
-        public void ChangeState(State.IState newState)
+        /// <summary>
+        ///     전체 착수 횟수를 업데이트
+        /// </summary>
+        /// <returns>
+        ///     게임 종료 여부를 반환
+        ///     <list>
+        ///         <item>false: 계속</item><item>true: 게임 종료</item>
+        ///     </list>
+        /// </returns>
+        private bool IncreaseTurns()
         {
-            _currentState.OnExit();
-            _currentState = newState;
-            _currentState.OnEnter();
+            if (++currentTurns > maxTurns) return true;
+            return false;
+        }
+
+        public void ChangeState(IState newState)
+        {
+            if (IncreaseTurns())
+            {
+                PauseResume();
+                EndGame();
+            }
+            else
+            {
+                _currentState.OnExit();
+                _currentState = newState;
+                _currentState.OnEnter();
+            }
         }
 
         // 플레이를 중지하고 점수 산정 진행
@@ -300,7 +321,7 @@ namespace SinglePlay2
             PauseResume();
             _isGameEnded = true;
             _currentState.OnExit();
-            _currentState = new State.EndGameState(this, GameBoard);
+            _currentState = new EndGameState(this, GameBoard);
             _currentState.OnEnter();
         }
 
@@ -345,32 +366,42 @@ namespace SinglePlay2
         /// <param name="stoneType">돌 종류 [흑/백]</param>
         public void PutStones((int, int)[] stonesToPut, int stoneType)
         {
+            if (PrevActions.Count == 3) PrevActions.RemoveAt(0);
+            var currentAction = new List<(int, int)>();
+
             // 돌 배치 및 렌더링
             foreach (var (i, j) in stonesToPut)
             {
+                currentAction.Add((i, j));
+
                 GameObject stone;
                 if (Random.Range(0, 15) == 0)
                 {
                     GameBoard[i, j] = 3;
-                    stone = Instantiate(bonusStone, new Vector3((i - 9) * 0.5f+center.position.x, (j - 9) * 0.5f+center.position.y, 0),
+                    stone = Instantiate(bonusStone,
+                        new Vector3((i - 9) * 0.5f + center.position.x, (j - 9) * 0.5f + center.position.y, 0),
                         Quaternion.identity);
                 }
                 else if (stoneType == 1)
                 {
                     GameBoard[i, j] = 1;
-                    stone = Instantiate(blackStone, new Vector3((i - 9) * 0.5f+center.position.x, (j - 9) * 0.5f+center.position.y, 0),
+                    stone = Instantiate(blackStone,
+                        new Vector3((i - 9) * 0.5f + center.position.x, (j - 9) * 0.5f + center.position.y, 0),
                         Quaternion.identity);
                 }
                 else
                 {
                     GameBoard[i, j] = 2;
-                    stone = Instantiate(whiteStone, new Vector3((i - 9) * 0.5f+center.position.x, (j - 9) * 0.5f+center.position.y, 0),
+                    stone = Instantiate(whiteStone,
+                        new Vector3((i - 9) * 0.5f + center.position.x, (j - 9) * 0.5f + center.position.y, 0),
                         Quaternion.identity);
                 }
 
                 stone.name = i + "_" + j;
                 stone.transform.SetParent(prevStones.transform);
             }
+
+            PrevActions.Add(currentAction);
 
             SoundManager.PlaySound(""); // TODO: Put Stone Sound
             CheckConnections(stonesToPut, stoneType);
@@ -426,22 +457,21 @@ namespace SinglePlay2
                         break;
                     }
                 }
+
                 if (xLength >= 4)
-                {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(xLength);
-                            White_Agent.AddReward(-xLength*0.6f);
+                            White_Agent.AddReward(-xLength * 0.6f);
                         }
                         else
                         {
                             White_Agent.AddReward(xLength);
-                            Black_Agent.AddReward(-xLength*0.6f);
+                            Black_Agent.AddReward(-xLength * 0.6f);
                         }
                     }
-                }
 
                 if (xLength >= 10)
                 {
@@ -451,16 +481,16 @@ namespace SinglePlay2
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(xLength*2);
-                            White_Agent.AddReward(-xLength*1f);
+                            Black_Agent.AddReward(xLength * 2);
+                            White_Agent.AddReward(-xLength * 1f);
                         }
                         else
                         {
-                            White_Agent.AddReward(xLength*2);
-                            Black_Agent.AddReward(-xLength*1f);
+                            White_Agent.AddReward(xLength * 2);
+                            Black_Agent.AddReward(-xLength * 1f);
                         }
                     }
-                    
+
                     deletedLines++;
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
@@ -508,40 +538,38 @@ namespace SinglePlay2
                 }
 
                 if (yLength >= 4)
-                {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(yLength);
-                            White_Agent.AddReward(-yLength*0.6f);
+                            White_Agent.AddReward(-yLength * 0.6f);
                         }
                         else
                         {
                             White_Agent.AddReward(yLength);
-                            Black_Agent.AddReward(-yLength*0.6f);
+                            Black_Agent.AddReward(-yLength * 0.6f);
                         }
                     }
-                }
 
                 if (yLength >= 10)
                 {
                     Debug.Log("Complete Line!");
-                    
+
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(yLength*2);
-                            White_Agent.AddReward(-yLength*1f);
+                            Black_Agent.AddReward(yLength * 2);
+                            White_Agent.AddReward(-yLength * 1f);
                         }
                         else
                         {
-                            White_Agent.AddReward(yLength*2);
-                            Black_Agent.AddReward(-yLength*1f);
+                            White_Agent.AddReward(yLength * 2);
+                            Black_Agent.AddReward(-yLength * 1f);
                         }
                     }
-                    
+
                     deletedLines++;
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
@@ -589,42 +617,40 @@ namespace SinglePlay2
                         break;
                     }
                 }
-                
+
                 if (diagLength >= 4)
-                {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(diagLength);
-                            White_Agent.AddReward(-diagLength*0.6f);
+                            White_Agent.AddReward(-diagLength * 0.6f);
                         }
                         else
                         {
                             White_Agent.AddReward(diagLength);
-                            Black_Agent.AddReward(-diagLength*0.6f);
+                            Black_Agent.AddReward(-diagLength * 0.6f);
                         }
                     }
-                }
 
                 if (diagLength >= 10)
                 {
                     Debug.Log("Complete Line!");
-                    
+
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(diagLength*2);
-                            White_Agent.AddReward(-diagLength*1f);
+                            Black_Agent.AddReward(diagLength * 2);
+                            White_Agent.AddReward(-diagLength * 1f);
                         }
                         else
                         {
-                            White_Agent.AddReward(diagLength*2);
-                            Black_Agent.AddReward(-diagLength*1f);
+                            White_Agent.AddReward(diagLength * 2);
+                            Black_Agent.AddReward(-diagLength * 1f);
                         }
                     }
-                    
+
                     deletedLines++;
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
@@ -672,47 +698,45 @@ namespace SinglePlay2
                         break;
                     }
                 }
-                
+
                 if (diagLength >= 4)
-                {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
                             Black_Agent.AddReward(diagLength);
-                            White_Agent.AddReward(-diagLength*0.6f);
+                            White_Agent.AddReward(-diagLength * 0.6f);
                         }
                         else
                         {
                             White_Agent.AddReward(diagLength);
-                            Black_Agent.AddReward(-diagLength*0.6f);
+                            Black_Agent.AddReward(-diagLength * 0.6f);
                         }
                     }
-                }
 
                 if (diagLength >= 10)
                 {
                     Debug.Log("Complete Line!");
-                    
+
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 1)
                         {
-                            Black_Agent.AddReward(diagLength*2);
-                            White_Agent.AddReward(-diagLength*1f);
+                            Black_Agent.AddReward(diagLength * 2);
+                            White_Agent.AddReward(-diagLength * 1f);
                         }
                         else
                         {
-                            White_Agent.AddReward(diagLength*2);
-                            Black_Agent.AddReward(-diagLength*1f);
+                            White_Agent.AddReward(diagLength * 2);
+                            Black_Agent.AddReward(-diagLength * 1f);
                         }
                     }
-                    
+
                     deletedLines++;
                     stonesToRemove = stonesToRemove.Union(checkingStones).ToList();
                 }
             }
-            
+
             if (stoneType == 1)
                 UpdateScores(deletedLines * 10, 0);
             else
@@ -734,7 +758,7 @@ namespace SinglePlay2
                 Destroy(GameObject.Find(i + "_" + j));
             }
 
-            stoneType = (stoneType == 1) ? 2 : 1;
+            stoneType = stoneType == 1 ? 2 : 1;
             // 가로 탐색
             checkedY = new List<int>();
             foreach (var (i, j) in getCurrentStones)
@@ -746,45 +770,37 @@ namespace SinglePlay2
                 {
                     if (currentX == 0) break;
                     if (GameBoard[--currentX, j] == stoneType || GameBoard[currentX, j] == 3)
-                    {
                         xLength++;
-                    }
                     else
-                    {
                         break;
-                    }
                 }
+
                 currentX = i;
                 while (true)
                 {
                     if (currentX == 18) break;
                     if (GameBoard[++currentX, j] == stoneType || GameBoard[currentX, j] == 3)
-                    {
                         xLength++;
-                    }
                     else
-                    {
                         break;
-                    }
                 }
+
                 if (xLength >= 5)
-                {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 2)
                         {
-                            Black_Agent.AddReward(xLength*4);
+                            Black_Agent.AddReward(xLength * 4);
                             White_Agent.AddReward(-xLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(xLength*4);
+                            White_Agent.AddReward(xLength * 4);
                             Black_Agent.AddReward(-xLength);
                         }
                     }
-                }
             }
-            
+
             // 세로 탐색
             checkedX = new List<int>();
             foreach (var (i, j) in getCurrentStones)
@@ -798,13 +814,9 @@ namespace SinglePlay2
                 {
                     if (currentY == 0) break;
                     if (GameBoard[i, --currentY] == stoneType || GameBoard[i, currentY] == 3)
-                    {
                         yLength++;
-                    }
                     else
-                    {
                         break;
-                    }
                 }
 
                 currentY = j;
@@ -812,31 +824,25 @@ namespace SinglePlay2
                 {
                     if (currentY == 18) break;
                     if (GameBoard[i, ++currentY] == stoneType || GameBoard[i, currentY] == 3)
-                    {
                         yLength++;
-                    }
                     else
-                    {
                         break;
-                    }
                 }
 
                 if (yLength >= 5)
-                {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 2)
                         {
-                            Black_Agent.AddReward(yLength*4);
+                            Black_Agent.AddReward(yLength * 4);
                             White_Agent.AddReward(-yLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(yLength*4);
+                            White_Agent.AddReward(yLength * 4);
                             Black_Agent.AddReward(-yLength);
                         }
                     }
-                }
             }
 
             // x - y = constant 대각선 탐색
@@ -853,13 +859,9 @@ namespace SinglePlay2
                     if (currentX == 0 || currentY == 0) break;
                     if (GameBoard[--currentX, --currentY] == stoneType ||
                         GameBoard[currentX, currentY] == 3)
-                    {
                         diagLength++;
-                    }
                     else
-                    {
                         break;
-                    }
                 }
 
                 currentX = i;
@@ -869,31 +871,25 @@ namespace SinglePlay2
                     if (currentX == 18 || currentY == 18) break;
                     if (GameBoard[++currentX, ++currentY] == stoneType ||
                         GameBoard[currentX, currentY] == 3)
-                    {
                         diagLength++;
-                    }
                     else
-                    {
                         break;
-                    }
                 }
-                
+
                 if (diagLength >= 5)
-                {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 2)
                         {
-                            Black_Agent.AddReward(diagLength*4);
+                            Black_Agent.AddReward(diagLength * 4);
                             White_Agent.AddReward(-diagLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(diagLength*4);
+                            White_Agent.AddReward(diagLength * 4);
                             Black_Agent.AddReward(-diagLength);
                         }
                     }
-                }
             }
 
             // x + y = constant 대각선 탐색
@@ -910,13 +906,9 @@ namespace SinglePlay2
                     if (currentX == 0 || currentY == 18) break;
                     if (GameBoard[--currentX, ++currentY] == stoneType ||
                         GameBoard[currentX, currentY] == 3)
-                    {
                         diagLength++;
-                    }
                     else
-                    {
                         break;
-                    }
                 }
 
                 currentX = i;
@@ -926,31 +918,25 @@ namespace SinglePlay2
                     if (currentX == 18 || currentY == 0) break;
                     if (GameBoard[++currentX, --currentY] == stoneType ||
                         GameBoard[currentX, currentY] == 3)
-                    {
                         diagLength++;
-                    }
                     else
-                    {
                         break;
-                    }
                 }
-                
+
                 if (diagLength >= 5)
-                {
                     if (BlackAI && WhiteAI)
                     {
                         if (stoneType == 2)
                         {
-                            Black_Agent.AddReward(diagLength*4);
+                            Black_Agent.AddReward(diagLength * 4);
                             White_Agent.AddReward(-diagLength);
                         }
                         else
                         {
-                            White_Agent.AddReward(diagLength*4);
+                            White_Agent.AddReward(diagLength * 4);
                             Black_Agent.AddReward(-diagLength);
                         }
                     }
-                }
             }
         }
 
@@ -965,38 +951,41 @@ namespace SinglePlay2
         }
 
         /// <summary>
-        /// 현재 조각(pieceMatrix)이 보드(GameBoard)에 더 이상 놓을 수 없는지를 판정하고,
-        /// 놓을 수 없으면 게임 종료 상태로 전환합니다.
+        ///     현재 조각(pieceMatrix)이 보드(GameBoard)에 더 이상 놓을 수 없는지를 판정하고,
+        ///     놓을 수 없으면 게임 종료 상태로 전환합니다.
         /// </summary>
         /// <param name="pieceMatrix">
-        /// 19×19 크기로, 조각 모양에 해당하는 칸만 1(또는 2)이며 나머지는 0인 배열</param>
+        ///     19×19 크기로, 조각 모양에 해당하는 칸만 1(또는 2)이며 나머지는 0인 배열
+        /// </param>
         public void CheckEndGame(int[,] pieceMatrix)
         {
             // 1) 조각의 최소 바운딩 박스(crop) 추출
             int minX = 19, maxX = -1, minY = 19, maxY = -1;
-            for (int i = 0; i < 19; i++)
-                for (int j = 0; j < 19; j++)
-                    if (pieceMatrix[i, j] != 0)
-                    {
-                        minX = Mathf.Min(minX, i);
-                        maxX = Mathf.Max(maxX, i);
-                        minY = Mathf.Min(minY, j);
-                        maxY = Mathf.Max(maxY, j);
-                    }
+            for (var i = 0; i < 19; i++)
+            for (var j = 0; j < 19; j++)
+                if (pieceMatrix[i, j] != 0)
+                {
+                    minX = Mathf.Min(minX, i);
+                    maxX = Mathf.Max(maxX, i);
+                    minY = Mathf.Min(minY, j);
+                    maxY = Mathf.Max(maxY, j);
+                }
+
             // 조각이 아예 없으면(비정상) 바로 종료
             if (maxX < minX || maxY < minY)
             {
-                ChangeState(new State.EndGameState(this, GameBoard));
+                ChangeState(new EndGameState(this, GameBoard));
                 return;
             }
-            int width  = maxX - minX + 1;
-            int height = maxY - minY + 1;
+
+            var width = maxX - minX + 1;
+            var height = maxY - minY + 1;
 
             // 2) 바운딩 박스로 조각만 추출
-            int[,] shape = new int[width, height];
-            for (int x = 0; x < width; x++)
-                for (int y = 0; y < height; y++)
-                    shape[x, y] = pieceMatrix[minX + x, minY + y];
+            var shape = new int[width, height];
+            for (var x = 0; x < width; x++)
+            for (var y = 0; y < height; y++)
+                shape[x, y] = pieceMatrix[minX + x, minY + y];
 
             // 2.5) Agent한테 먹여줄 소중한 정보들
             CurrentShape = shape;
@@ -1008,129 +997,116 @@ namespace SinglePlay2
             this.maxY = maxY;
 
             // 3) 4회전 + 모든 보드 위치에 대해 충돌 검사
-            for (int rot = 0; rot < 4; rot++)
+            for (var rot = 0; rot < 4; rot++)
             {
                 // 회전된 shape와 크기 얻기
                 var (rotShape, rotW, rotH) = RotateShape90(shape, width, height, rot);
 
                 // 보드 위에 놓을 수 있는 좌표 한계
-                int maxOffsetX = 19 - rotW;
-                int maxOffsetY = 19 - rotH;
+                var maxOffsetX = 19 - rotW;
+                var maxOffsetY = 19 - rotH;
 
-                for (int offY = 0; offY <= maxOffsetY; offY++)
+                for (var offY = 0; offY <= maxOffsetY; offY++)
+                for (var offX = 0; offX <= maxOffsetX; offX++)
                 {
-                    for (int offX = 0; offX <= maxOffsetX; offX++)
-                    {
-                        bool canPlace = true;
-                        // 각 셀이 비어 있는지 확인
-                        for (int x = 0; x < rotW && canPlace; x++)
-                            for (int y = 0; y < rotH; y++)
-                                if (rotShape[x, y] != 0 && GameBoard[x + offX, y + offY] != 0)
-                                {
-                                    canPlace = false;
-                                    break;
-                                }
+                    var canPlace = true;
+                    // 각 셀이 비어 있는지 확인
+                    for (var x = 0; x < rotW && canPlace; x++)
+                    for (var y = 0; y < rotH; y++)
+                        if (rotShape[x, y] != 0 && GameBoard[x + offX, y + offY] != 0)
+                        {
+                            canPlace = false;
+                            break;
+                        }
 
-                        if (canPlace)
-                            return;  // 한 번이라도 놓을 수 있으면 게임 종료 아님
-                    }
+                    if (canPlace)
+                        return; // 한 번이라도 놓을 수 있으면 게임 종료 아님
                 }
             }
 
             // 4) 한번도 놓을 수 없으면 게임 종료
-            ChangeState(new State.EndGameState(this, GameBoard));
+            ChangeState(new EndGameState(this, GameBoard));
         }
 
         /// <summary>
-        /// 주어진 shape를 90° 회전(rotTimes 회)한 새 배열과 그 크기를 반환합니다.
+        ///     주어진 shape를 90° 회전(rotTimes 회)한 새 배열과 그 크기를 반환합니다.
         /// </summary>
         private (int[,], int, int) RotateShape90(int[,] shape, int w, int h, int rotTimes)
         {
-            int[,] cur = shape;
+            var cur = shape;
             int curW = w, curH = h;
 
-            for (int r = 0; r < rotTimes; r++)
+            for (var r = 0; r < rotTimes; r++)
             {
                 // 다음 회전 상태 생성
-                int[,] next = new int[curH, curW];
-                for (int x = 0; x < curW; x++)
-                    for (int y = 0; y < curH; y++)
-                        next[y, curW - 1 - x] = cur[x, y];
+                var next = new int[curH, curW];
+                for (var x = 0; x < curW; x++)
+                for (var y = 0; y < curH; y++)
+                    next[y, curW - 1 - x] = cur[x, y];
 
                 cur = next;
-                int tmp = curW; 
-                curW = curH; 
+                var tmp = curW;
+                curW = curH;
                 curH = tmp;
             }
 
             return (cur, curW, curH);
         }
-        
+
         // GameManager.cs에 다음 함수 추가
 
         /// <summary>
-        /// 현재 플레이 중인 상태에서 조각을 놓을 수 있는지 확인
+        ///     현재 플레이 중인 상태에서 조각을 놓을 수 있는지 확인
         /// </summary>
         /// <returns>현재 조각을 배치할 수 있는지 여부</returns>
         public bool CanPlaceCurrentPiece()
         {
             // 현재 State에서 _canLocate 값 확인
-            if (_currentState is BlackState blackState)
-            {
-                return CheckPieceCanBePlaced(1);
-            }
-            else if (_currentState is WhiteState whiteState)
-            {
-                return CheckPieceCanBePlaced(2);
-            }
-            else if (_currentState is InitialBlackState initialBlackState)
-            {
-                return CheckPieceCanBePlaced(1);
-            }
-    
+            if (_currentState is BlackState blackState) return CheckPieceCanBePlaced(1);
+
+            if (_currentState is WhiteState whiteState) return CheckPieceCanBePlaced(2);
+
+            if (_currentState is InitialBlackState initialBlackState) return CheckPieceCanBePlaced(1);
+
             return false;
         }
 
         /// <summary>
-        /// 주어진 타입의 돌이 현재 위치에 놓일 수 있는지 확인
+        ///     주어진 타입의 돌이 현재 위치에 놓일 수 있는지 확인
         /// </summary>
         private bool CheckPieceCanBePlaced(int stoneType)
         {
             // 현재 도형의 위치 찾기
             int minX = 19, maxX = -1, minY = 19, maxY = -1;
-            int[,] currentPiece = new int[19, 19];
-    
+            var currentPiece = new int[19, 19];
+
             // 현재 도형 위치 확인
-            for (int i = 0; i < 19; i++)
-            for (int j = 0; j < 19; j++)
+            for (var i = 0; i < 19; i++)
+            for (var j = 0; j < 19; j++)
             {
                 // 현재 렌더링된 도형 찾기 (돌의 위치 확인)
-                Transform stone = currentStones.transform.Find(i + "_" + j);
+                var stone = currentStones.transform.Find(i + "_" + j);
                 if (stone != null)
                 {
                     currentPiece[i, j] = stoneType;
-            
+
                     if (i < minX) minX = i;
                     if (i > maxX) maxX = i;
                     if (j < minY) minY = j;
                     if (j > maxY) maxY = j;
                 }
             }
-    
+
             // 현재 도형이 없으면 확인 불가
             if (maxX < minX || maxY < minY) return true;
-    
+
             // 보드에 충돌하는지 확인
-            for (int i = minX; i <= maxX; i++)
-            for (int j = minY; j <= maxY; j++)
-            {
+            for (var i = minX; i <= maxX; i++)
+            for (var j = minY; j <= maxY; j++)
                 if (currentPiece[i, j] != 0 && GameBoard[i, j] != 0)
-                {
                     // 이미 돌이 있는 위치
                     return false;
-                }
-            }
-    
+
             return true;
         }
     }
